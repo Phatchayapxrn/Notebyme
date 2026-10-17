@@ -1,0 +1,173 @@
+/* =====================================================================
+   สไตล์หลักของทั้งเว็บ
+   - ส่วน :root = ค่าสีทั้งหมด (เปลี่ยนสีทั้งเว็บแก้ที่นี่ที่เดียว)
+   - ค่าสีเขียนเป็นเลข R G B (ไม่มีลูกน้ำ) เพื่อให้ Tailwind ทำความโปร่งใสได้
+   ===================================================================== */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-cream: 255 248 244; /*  #FFF8F4 พื้นหลังครีม */
+  --color-paper: 255 255 255; /*  #FFFFFF พื้นกล่อง */
+  --color-blush: 251 228 232; /*  #FBE4E8 ชมพูอ่อน */
+  --color-pink: 242 191 200; /*   #F2BFC8 ชมพูกลาง */
+  --color-rose: 217 138 154; /*   #D98A9A ชมพูเข้ม */
+  --color-wine: 59 30 36; /*      #3B1E24 มารูนเข้ม (สีหลัก) */
+  --color-ink: 59 42 46; /*       #3B2A2E ตัวหนังสือหลัก */
+  --color-soft: 127 106 114; /*   #7F6A72 ตัวหนังสือรอง */
+  --color-line: 235 205 211; /*   #EBCDD3 เส้นขอบ */
+  --color-danger: 194 71 94; /*   #C2475E สีเตือน */
+
+  color-scheme: light;
+}
+
+/* ---------- ค่าเริ่มต้นของหน้า ---------- */
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-cream font-body text-ink antialiased;
+    /* ไล่สีชมพูจางๆ ด้านบน เหมือนรูปตัวอย่าง */
+    background-image: radial-gradient(ellipse 80% 50% at 70% 0%, rgb(var(--color-blush) / 0.7), transparent 70%);
+    background-attachment: fixed;
+    min-height: 100dvh;
+  }
+  :focus-visible {
+    @apply outline-none ring-2 ring-rose ring-offset-2 ring-offset-cream;
+  }
+  ::selection {
+    @apply bg-pink/70;
+  }
+}
+
+/* ---------- ตัวช่วยเว้นขอบจอ iPhone (รอยบาก / แถบล่าง) ---------- */
+@layer utilities {
+  .space-for-top-notch {
+    padding-top: env(safe-area-inset-top);
+  }
+  .space-for-bottom-bar {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .hide-scrollbar {
+    scrollbar-width: none;
+  }
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* ---------- ป้ายตัวเล็กตัวพิมพ์ใหญ่ห่างๆ เช่น "CAPTURE" ---------- */
+@layer components {
+  .small-label {
+    /* ระยะห่างตัวอักษรนิดเดียว เพราะถ้าห่างมาก ภาษาไทยจะอ่านยาก (สระ/วรรณยุกต์แยกออกจากกัน) */
+    @apply font-body text-xs font-medium uppercase tracking-[0.06em] text-soft;
+  }
+  .text-input {
+    @apply w-full rounded-2xl border-2 border-line bg-paper px-4 py-3 text-base text-ink placeholder:text-soft/70 transition focus:border-rose focus:outline-none focus:ring-0;
+  }
+}
+
+/* =====================================================================
+   หน้าตาเนื้อหาใน editor ของโน๊ต (TipTap / ProseMirror)
+   ===================================================================== */
+.note-content {
+  @apply text-[17px] leading-relaxed text-ink outline-none;
+  min-height: 40vh;
+}
+.note-content > * + * {
+  margin-top: 0.6em;
+}
+.note-content h2 {
+  @apply font-title text-2xl font-semibold;
+}
+.note-content h3 {
+  @apply font-title text-xl font-semibold;
+}
+.note-content ul:not([data-type='taskList']) {
+  @apply list-disc pl-6;
+}
+.note-content ol {
+  @apply list-decimal pl-6;
+}
+.note-content blockquote {
+  @apply border-l-4 border-pink pl-4 italic text-soft;
+}
+.note-content a {
+  @apply text-wine underline;
+}
+.note-content code {
+  @apply rounded bg-blush px-1 font-typewriter text-sm;
+}
+/* checklist */
+.note-content ul[data-type='taskList'] {
+  @apply list-none pl-0;
+}
+.note-content ul[data-type='taskList'] li {
+  @apply flex items-start gap-2;
+}
+.note-content ul[data-type='taskList'] li > label {
+  @apply mt-1 flex-none;
+}
+.note-content ul[data-type='taskList'] li > label input {
+  @apply h-5 w-5 cursor-pointer accent-wine;
+}
+.note-content ul[data-type='taskList'] li[data-checked='true'] > div {
+  @apply text-soft line-through;
+}
+/* ข้อความจางๆ ตอนยังไม่ได้พิมพ์ */
+.note-content p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  @apply pointer-events-none float-left h-0 text-soft/60;
+}
+
+/* =====================================================================
+   กลีบดอกไม้ร่วง (ตกแต่งหน้าล็อกอิน)
+   ===================================================================== */
+@keyframes petal-fall {
+  0% {
+    transform: translate3d(0, -10vh, 0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate3d(12vw, 110vh, 0) rotate(540deg);
+    opacity: 0.2;
+  }
+}
+.petal {
+  position: absolute;
+  top: 0;
+  width: 14px;
+  height: 10px;
+  border-radius: 80% 0 80% 0;
+  background: rgb(var(--color-pink));
+  animation: petal-fall linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .petal {
+    animation: none;
+    display: none;
+  }
+}
+
+/* แถบวิ่งตอนกำลังอัปโหลดไฟล์ */
+@keyframes upload-slide {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(300%);
+  }
+}
+
+/* ช่องเขียนโน๊ต: ไม่ต้องมีกรอบชมพูตอนกำลังพิมพ์ */
+.note-content:focus-visible {
+  --tw-ring-shadow: 0 0 #0000;
+  --tw-ring-offset-shadow: 0 0 #0000;
+  box-shadow: none;
+}
