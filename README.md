@@ -109,7 +109,7 @@ npm run dev
 
 ### แบบ Netlify
 เหมือนกัน: Build command `npm run build`, Publish directory `dist` และใส่ Environment Variables 2 ตัว
-(ไฟล์ `public/_redirects` ตั้งค่าให้แล้ว)
+(ไฟล์ `netlify.toml` ตั้งค่าให้แล้ว)
 
 ### ติดตั้งลง iPhone
 เปิดเว็บใน **Safari** > กดปุ่ม **แชร์** > **เพิ่มไปยังหน้าจอโฮม**

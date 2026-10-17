@@ -1,0 +1,10 @@
+# ตั้งค่าสำหรับเอาเว็บขึ้น Netlify (Cloudflare ไม่อ่านไฟล์นี้)
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# เปิดลิงก์ลึกๆ ตรงๆ ได้ เช่น /tasks หรือ /notes/xxx (ไม่ขึ้น 404)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
