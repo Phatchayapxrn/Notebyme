@@ -1,0 +1,11 @@
+// ตั้งค่าสำหรับเอาเว็บขึ้น Cloudflare (ใช้ตอนรัน npx wrangler deploy)
+// บอก Cloudflare ว่าไฟล์เว็บที่ build แล้วอยู่ในโฟลเดอร์ dist
+{
+  "name": "notebyme",
+  "compatibility_date": "2025-10-01",
+  "assets": {
+    "directory": "./dist",
+    // เปิดลิงก์ลึกๆ ตรงๆ ได้ เช่น /tasks หรือ /notes/xxx (ไม่ขึ้น 404)
+    "not_found_handling": "single-page-application"
+  }
+}
