@@ -16,8 +16,8 @@ export default defineConfig({
         short_name: 'จดไอเดีย',
         description: 'จดไอเดียแยกหมวด + สิ่งที่ต้องทำ',
         lang: 'th',
-        theme_color: '#FFF8F4',
-        background_color: '#FFF8F4',
+        theme_color: '#F7F7F8',
+        background_color: '#F7F7F8',
         display: 'standalone',
         start_url: '/',
         icons: [

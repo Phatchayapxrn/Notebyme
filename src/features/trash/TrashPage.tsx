@@ -96,7 +96,7 @@ export function TrashPage() {
         }
       />
 
-      <div className="overflow-hidden rounded-3xl border-[1.5px] border-wine/20 bg-cream">
+      <div className="overflow-hidden rounded-3xl border border-line bg-cream">
         <div className="pt-2">
           <Tabs
             tabList={[

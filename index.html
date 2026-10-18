@@ -4,7 +4,15 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#FFF8F4" />
+    <meta name="theme-color" content="#F7F7F8" />
+    <!-- ใส่โหมดสี (สว่าง/มืด) ทันที ก่อนเว็บโหลด จะได้ไม่มีจอขาวแวบ (รายละเอียดใน src/shared/theme/themeTools.ts) -->
+    <script>
+      try {
+        var themeChoice = localStorage.getItem('theme') || 'auto'
+        var isDark = themeChoice === 'dark' || (themeChoice === 'auto' && matchMedia('(prefers-color-scheme: dark)').matches)
+        document.documentElement.dataset.theme = isDark ? 'dark' : 'light'
+      } catch (error) {}
+    </script>
     <meta name="description" content="จดไอเดียแยกหมวด + สิ่งที่ต้องทำ" />
 
     <!-- ทำให้กด "เพิ่มไปยังหน้าจอโฮม" บน iPhone แล้วเปิดเต็มจอเหมือนแอพ -->

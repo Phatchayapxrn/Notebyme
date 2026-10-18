@@ -30,10 +30,10 @@ export default {
         body: ['"IBM Plex Sans Thai Looped"', '-apple-system', 'system-ui', 'sans-serif'], // ข้อความทั่วไป
       },
       boxShadow: {
-        // เงาแบบเลื่อนลงขวา เหมือนปุ่มในรูปตัวอย่าง
-        pop: '3px 3px 0 0 rgb(var(--color-line))',
-        'pop-dark': '3px 3px 0 0 rgb(var(--color-wine) / 0.35)',
-        soft: '0 6px 24px -8px rgb(var(--color-wine) / 0.18)',
+        // เงาบางๆ แบบเรียบ (สีเงาเปลี่ยนตามโหมดสว่าง/มืด ดู --color-shadow ใน index.css)
+        pop: '0 1px 2px 0 rgb(var(--color-shadow) / 0.08)',
+        'pop-dark': '0 2px 6px -1px rgb(var(--color-shadow) / 0.25)',
+        soft: '0 1px 2px 0 rgb(var(--color-shadow) / 0.04), 0 8px 24px -12px rgb(var(--color-shadow) / 0.14)',
       },
       letterSpacing: {
         label: '0.25em', // ระยะห่างตัวอักษรของป้ายตัวเล็ก เช่น "CAPTURE"

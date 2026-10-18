@@ -1,6 +1,6 @@
 // =====================================================================
 // HomePage : หน้าแรก (/) ภาพรวมทั้งหมด
-// แสดงวันที่ + การ์ดของทุกระบบที่มี homeCard (เรียงตามลำดับเมนู)
+// แสดงวันที่ + การ์ดของทุกระบบที่มี homeCard (เรียงตาม homeOrder หรือลำดับเมนู)
 // ระบบใหม่ที่มี homeCard จะมาโผล่ในหน้านี้เองอัตโนมัติ
 // =====================================================================
 import { useAllFeatures } from '@/shared/layout/useAllFeatures'
@@ -20,7 +20,7 @@ export function HomePage() {
   const features = useAllFeatures()
   const featuresWithHomeCard = features
     .filter((feature) => feature.homeCard)
-    .sort((first, second) => first.menuOrder - second.menuOrder)
+    .sort((first, second) => (first.homeOrder ?? first.menuOrder) - (second.homeOrder ?? second.menuOrder))
 
   return (
     <>

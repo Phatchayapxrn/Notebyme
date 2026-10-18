@@ -1,25 +1,46 @@
 /* =====================================================================
    สไตล์หลักของทั้งเว็บ
-   - ส่วน :root = ค่าสีทั้งหมด (เปลี่ยนสีทั้งเว็บแก้ที่นี่ที่เดียว)
+   - ส่วน :root = ค่าสีโหมดสว่าง / ส่วน [data-theme='dark'] = ค่าสีโหมดมืด
+     (เปลี่ยนสีทั้งเว็บแก้ที่นี่ที่เดียว)
    - ค่าสีเขียนเป็นเลข R G B (ไม่มีลูกน้ำ) เพื่อให้ Tailwind ทำความโปร่งใสได้
+   - ชื่อสี (cream, wine, ...) เป็นชื่อเดิมจากธีมชมพู ยังใช้ชื่อเดิมเพื่อไม่ต้องแก้ทุกไฟล์
    ===================================================================== */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* ---------- โหมดสว่าง (ค่าเริ่มต้น) : โทนขาว-เทา สะอาดตา + ชมพูเป็นสีเน้นนิดหน่อย ---------- */
 :root {
-  --color-cream: 255 248 244; /*  #FFF8F4 พื้นหลังครีม */
+  --color-cream: 247 247 248; /*  #F7F7F8 พื้นหลังหน้าเว็บ */
   --color-paper: 255 255 255; /*  #FFFFFF พื้นกล่อง */
-  --color-blush: 251 228 232; /*  #FBE4E8 ชมพูอ่อน */
-  --color-pink: 242 191 200; /*   #F2BFC8 ชมพูกลาง */
-  --color-rose: 217 138 154; /*   #D98A9A ชมพูเข้ม */
-  --color-wine: 59 30 36; /*      #3B1E24 มารูนเข้ม (สีหลัก) */
-  --color-ink: 59 42 46; /*       #3B2A2E ตัวหนังสือหลัก */
-  --color-soft: 127 106 114; /*   #7F6A72 ตัวหนังสือรอง */
-  --color-line: 235 205 211; /*   #EBCDD3 เส้นขอบ */
-  --color-danger: 194 71 94; /*   #C2475E สีเตือน */
+  --color-blush: 241 241 244; /*  #F1F1F4 พื้นอ่อน (ตอนชี้เมาส์ / แถบหัวกล่อง) */
+  --color-pink: 214 214 221; /*   #D6D6DD สีกลาง (ขอบวงกลมติ๊ก / ตัวหนังสือจางๆ) */
+  --color-rose: 219 112 138; /*   #DB708A สีเน้น (แถบ % / แถบอัปโหลด / กรอบตอนเลือก) */
+  --color-wine: 28 28 33; /*      #1C1C21 สีหลัก (ปุ่มหลัก / หัวข้อ / ปุ่มที่เลือก) */
+  --color-ink: 33 33 38; /*       #212126 ตัวหนังสือหลัก */
+  --color-soft: 112 112 122; /*   #70707A ตัวหนังสือรอง */
+  --color-line: 229 229 234; /*   #E5E5EA เส้นขอบ */
+  --color-danger: 214 60 84; /*   #D63C54 สีเตือน */
+  --color-shadow: 16 16 24; /*    สีเงา */
 
   color-scheme: light;
+}
+
+/* ---------- โหมดมืด : ใช้เมื่อ <html data-theme="dark"> (สลับได้ที่ปุ่มพระจันทร์ / หน้าตั้งค่า) ---------- */
+:root[data-theme='dark'] {
+  --color-cream: 17 17 20; /*     #111114 พื้นหลังหน้าเว็บ */
+  --color-paper: 27 27 31; /*     #1B1B1F พื้นกล่อง */
+  --color-blush: 38 38 44; /*     #26262C พื้นอ่อน */
+  --color-pink: 72 72 82; /*      #484852 สีกลาง */
+  --color-rose: 236 133 158; /*   #EC859E สีเน้น */
+  --color-wine: 238 238 242; /*   #EEEEF2 สีหลัก (โหมดมืดกลับเป็นสีอ่อน: ปุ่มหลักพื้นขาว ตัวหนังสือเข้ม) */
+  --color-ink: 232 232 237; /*    #E8E8ED ตัวหนังสือหลัก */
+  --color-soft: 152 152 164; /*   #9898A4 ตัวหนังสือรอง */
+  --color-line: 48 48 55; /*      #303037 เส้นขอบ */
+  --color-danger: 244 104 124; /* #F4687C สีเตือน */
+  --color-shadow: 0 0 0; /*       สีเงา */
+
+  color-scheme: dark;
 }
 
 /* ---------- ค่าเริ่มต้นของหน้า ---------- */
@@ -30,16 +51,15 @@
   }
   body {
     @apply bg-cream font-body text-ink antialiased;
-    /* ไล่สีชมพูจางๆ ด้านบน เหมือนรูปตัวอย่าง */
-    background-image: radial-gradient(ellipse 80% 50% at 70% 0%, rgb(var(--color-blush) / 0.7), transparent 70%);
-    background-attachment: fixed;
     min-height: 100dvh;
+    /* ตอนสลับโหมดสว่าง/มืด ให้สีค่อยๆ เปลี่ยน */
+    transition: background-color 0.2s ease, color 0.2s ease;
   }
   :focus-visible {
     @apply outline-none ring-2 ring-rose ring-offset-2 ring-offset-cream;
   }
   ::selection {
-    @apply bg-pink/70;
+    @apply bg-rose/30;
   }
 }
 
@@ -93,7 +113,7 @@
   @apply list-decimal pl-6;
 }
 .note-content blockquote {
-  @apply border-l-4 border-pink pl-4 italic text-soft;
+  @apply border-l-4 border-line pl-4 italic text-soft;
 }
 .note-content a {
   @apply text-wine underline;
@@ -145,7 +165,7 @@
   width: 14px;
   height: 10px;
   border-radius: 80% 0 80% 0;
-  background: rgb(var(--color-pink));
+  background: rgb(var(--color-rose) / 0.45);
   animation: petal-fall linear infinite;
 }
 @media (prefers-reduced-motion: reduce) {

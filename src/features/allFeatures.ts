@@ -11,6 +11,8 @@ import type { AppFeature } from './AppFeature'
 import { homeFeature } from './home/feature'
 import { notesFeature } from './notes/feature'
 import { tasksFeature } from './tasks/feature'
+import { futureFeature } from './future/feature'
+import { shopFeature } from './shop/feature'
 import { trashFeature } from './trash/feature'
 import { settingsFeature } from './settings/feature'
 import { loginFeature } from './login/feature'
@@ -19,6 +21,8 @@ export const allFeatures: AppFeature[] = [
   homeFeature,
   notesFeature,
   tasksFeature,
+  futureFeature,
+  shopFeature,
   trashFeature,
   settingsFeature,
   loginFeature,

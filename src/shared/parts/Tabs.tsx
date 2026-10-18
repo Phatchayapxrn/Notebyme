@@ -23,7 +23,7 @@ interface TabsProps {
 
 export function Tabs({ tabList, selectedId, onSelect }: TabsProps) {
   return (
-    <div role="tablist" className="hide-scrollbar flex gap-1 overflow-x-auto border-b-[1.5px] border-wine/20 px-2">
+    <div role="tablist" className="hide-scrollbar flex gap-1 overflow-x-auto border-b border-line px-2">
       {tabList.map((tab) => {
         const isSelected = tab.id === selectedId
         return (
@@ -35,7 +35,7 @@ export function Tabs({ tabList, selectedId, onSelect }: TabsProps) {
             onClick={() => onSelect(tab.id)}
             className={`-mb-[1.5px] flex flex-none items-center gap-1.5 rounded-t-2xl border-[1.5px] px-5 py-2.5 text-[15px] transition ${
               isSelected
-                ? 'border-wine/20 border-b-paper bg-paper text-ink'
+                ? 'border-line border-b-paper bg-paper text-ink'
                 : 'border-transparent text-soft hover:text-ink'
             }`}
           >

@@ -6,6 +6,7 @@
 |---|---|
 | `001_start.sql` | ตาราง `groups`, `notes`, `tasks` + กฎความปลอดภัย + เปิดอัปเดตสด |
 | `002_files.sql` | ถังเก็บไฟล์ `user-files` + ตาราง `files` |
+| `003_future_and_shop.sql` | ตาราง `future_messages`, `shop_messages`, `shop_products`, `shop_orders` |
 
 > รันซ้ำได้ ไม่พัง (ใช้ `if not exists` / `drop ... if exists`)
 > **เพิ่มตารางใหม่:** สร้างไฟล์เลขถัดไป เช่น `003_diary.sql` แล้วไปรันใน SQL Editor
@@ -50,6 +51,45 @@
 | `due_date` | date | วันกำหนดส่ง (ว่างได้) |
 | `group_id` | uuid | อยู่หมวดไหน |
 | `done_at` | timestamptz | เวลาที่ติ๊กเสร็จ |
+| `updated_at`, `deleted_at` | | เหมือนตาราง notes |
+
+## ตาราง `future_messages` (ข้อความถึงตัวเองในอนาคต)
+
+| คอลัมน์ | ชนิด | ความหมาย |
+|---|---|---|
+| `text` | text | ข้อความ |
+| `show_date` | date | วันที่จะเปิดให้อ่าน (ถึงวันแล้วขึ้นในหน้าแรก) |
+| `is_read` | boolean | อ่านแล้วหรือยัง (อ่านแล้วไม่ขึ้นในหน้าแรกอีก / เลื่อนวันใหม่ = กลับเป็นยังไม่อ่าน) |
+| `updated_at`, `deleted_at` | | เหมือนตาราง notes |
+
+## ตาราง `shop_messages` (ชุดข้อความของร้าน)
+1 แถว = 1 ชุดข้อความ (วาง 1 ครั้ง = 1 ชุด)
+
+| คอลัมน์ | ชนิด | ความหมาย |
+|---|---|---|
+| `title` | text | ชื่อชุด (ว่างได้) |
+| `text` | text | ข้อความทั้งชุด |
+| `order_number` | integer | ลำดับ (น้อยอยู่ก่อน) |
+| `updated_at`, `deleted_at` | | เหมือนตาราง notes |
+
+## ตาราง `shop_products` (สินค้า)
+
+| คอลัมน์ | ชนิด | ความหมาย |
+|---|---|---|
+| `name` | text | ชื่อสินค้า |
+| `price` | numeric | ราคาขาย (บาท) |
+| `stock` | integer | จำนวนที่เหลือ |
+| `note` | text | หมายเหตุ เช่น สี / ไซซ์ |
+| `updated_at`, `deleted_at` | | เหมือนตาราง notes |
+
+## ตาราง `shop_orders` (ออเดอร์)
+
+| คอลัมน์ | ชนิด | ความหมาย |
+|---|---|---|
+| `customer_name` | text | ชื่อลูกค้า |
+| `detail` | text | รายละเอียด (สินค้า / ที่อยู่ / เบอร์) |
+| `total_price` | numeric | ยอดรวม (บาท) |
+| `status` | text | `waiting` = รอโอน, `paid` = โอนแล้ว รอส่ง, `sent` = ส่งแล้ว |
 | `updated_at`, `deleted_at` | | เหมือนตาราง notes |
 
 ## ตาราง `files` (ข้อมูลไฟล์ที่อัปโหลด)
@@ -105,7 +145,7 @@ user_id = auth.uid()   -- เห็น/แก้ได้เฉพาะแถ�
 ---
 
 ## ⚡ อัปเดตสด (Realtime)
-ส่วนท้ายของ `001_start.sql` เปิด Realtime ให้ 3 ตาราง → แก้ในเครื่องหนึ่ง อีกเครื่องเห็นทันที
+ส่วนท้ายของ `001_start.sql` และ `003_future_and_shop.sql` เปิด Realtime ให้ทุกตาราง → แก้ในเครื่องหนึ่ง อีกเครื่องเห็นทันที
 (ดูรายละเอียดใน [06-saving-and-sync.md](06-saving-and-sync.md))
 
 ---

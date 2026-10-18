@@ -39,7 +39,7 @@ export function PopupBox({ isOpen, title, onClose, children }: PopupBoxProps) {
   return createPortal(
     <div className="fixed inset-0 z-40 flex items-end justify-center p-3 sm:items-center" role="dialog" aria-modal="true" aria-label={title}>
       {/* พื้นหลังมืด กดเพื่อปิด */}
-      <div className="absolute inset-0 bg-wine/30 backdrop-blur-[2px]" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" onClick={onClose} />
       <WindowBox
         title={title}
         className="relative max-h-[90dvh] w-full max-w-md overflow-y-auto"

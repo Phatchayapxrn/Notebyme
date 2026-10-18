@@ -6,6 +6,7 @@
 // =====================================================================
 import { Link, Outlet } from 'react-router-dom'
 import type { AppFeature } from '@/features/AppFeature'
+import { ThemeButton } from '@/shared/theme/ThemeButton'
 import { SideMenu } from './SideMenu'
 import { BottomMenu } from './BottomMenu'
 import { RightSideBox } from './RightSideBox'
@@ -24,10 +25,11 @@ export function PageLayout({ features }: { features: AppFeature[] }) {
       <SideMenu menuFeatures={menuFeatures} />
 
       {/* หัวเว็บ (มือถือ) */}
-      <header className="space-for-top-notch px-5 pt-4 md:hidden">
+      <header className="space-for-top-notch flex items-center justify-between px-5 pt-4 md:hidden">
         <Link to="/" className="font-title text-3xl font-semibold italic text-wine">
           Idea.
         </Link>
+        <ThemeButton className="-mr-2" />
       </header>
 
       {/* เนื้อหาของหน้า */}

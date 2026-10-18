@@ -1,6 +1,7 @@
 // =====================================================================
 // SettingsPage : หน้าตั้งค่า (/settings)
 //   - บัญชี (อีเมล + ออกจากระบบ)
+//   - โหมดสี (สว่าง / มืด / ตามเครื่อง)
 //   - จัดการหมวดหมู่
 //   - พื้นที่เก็บไฟล์ที่ใช้ไป
 //   - สำรองข้อมูล (ดาวน์โหลดเป็นไฟล์ .json)
@@ -17,6 +18,7 @@ import { WindowBox } from '@/shared/parts/WindowBox'
 import { RoundButton } from '@/shared/parts/RoundButton'
 import { useShowMessage } from '@/shared/parts/PopupMessage'
 import { toDateText } from '@/shared/dateTools'
+import { ThemePicker } from '@/shared/theme/ThemeButton'
 import { logOut } from '../login/loginActions'
 import { GroupManager } from './GroupManager'
 
@@ -76,6 +78,11 @@ export function SettingsPage() {
               ออกจากระบบ
             </RoundButton>
           </div>
+        </WindowBox>
+
+        <WindowBox title="theme.exe">
+          <p className="small-label mb-3">โหมดสี</p>
+          <ThemePicker />
         </WindowBox>
 
         <WindowBox title="groups.exe">

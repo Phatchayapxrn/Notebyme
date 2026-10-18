@@ -59,3 +59,16 @@ export function showDueText(dateText: string): string {
   const [year, month, day] = dateText.split('-').map(Number)
   return new Date(year, month - 1, day).toLocaleDateString('th-TH', { day: 'numeric', month: 'short' })
 }
+
+/** วันที่ถัดไปจากวันนี้ เป็น "YYYY-MM-DD" เช่น dateFromToday({ months: 1 }) = อีก 1 เดือน */
+export function dateFromToday({ days = 0, months = 0, years = 0 }: { days?: number; months?: number; years?: number }): string {
+  const date = new Date()
+  date.setFullYear(date.getFullYear() + years, date.getMonth() + months, date.getDate() + days)
+  return toDateText(date)
+}
+
+/** วันที่แบบเต็มจาก "YYYY-MM-DD" เช่น "18 ตุลาคม 2569" */
+export function showFullDate(dateText: string): string {
+  const [year, month, day] = dateText.split('-').map(Number)
+  return new Date(year, month - 1, day).toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' })
+}

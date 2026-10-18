@@ -108,6 +108,10 @@
 | `isDatabaseReady` | ตั้งค่าฐานข้อมูลครบแล้วไหม |
 | `isEmptyNote` | โน๊ตว่างเปล่าไหม |
 | `isLate` | เลยกำหนดส่งแล้วไหม |
+| `isRead` | อ่านแล้วไหม (ข้อความถึงอนาคต) |
+| `isPeeking` | กำลังแอบดูข้อความที่ยังไม่ถึงวันไหม |
+| `isCopied` | เพิ่งคัดลอกเสร็จไหม (ปุ่มคัดลอกเป็นเครื่องหมายถูก) |
+| `isTyping` | กำลังพิมพ์อยู่ในช่องไหม |
 | `hasSideBox` | มีแถบขวาไหม |
 
 ---
@@ -130,6 +134,13 @@
 | `homeCard` / `sideCard` | การ์ดหน้าแรก / กล่องแถบขวา | ใน `feature.tsx` ของแต่ละระบบ |
 | `deleteOldTrash` / `TRASH_KEEP_DAYS` | ลบของในถังเกิน 30 วัน | `src/features/trash/deleteOldTrash.ts` |
 | `NoteEditor` / `PictureBlock` / `VideoBlock` | ช่องเขียนโน๊ต / บล็อกรูป / บล็อกวิดีโอ | `src/features/notes/parts/editor/` |
+| `useTheme` / `ThemeButton` / `ThemePicker` | โหมดสว่าง/มืด | `src/shared/theme/` |
+| `copyText` / `cleanText` | คัดลอก / จัดบรรทัด (ยุบบรรทัดว่างที่ซ้อนกัน) | `src/shared/text/copyText.ts` |
+| `toFancyLetters` / `toNormalLetters` | เปลี่ยนเป็นฟอนต์พิเศษ / ล้างกลับเป็นตัวปกติ | `src/shared/text/fancyLetters.ts` |
+| `insertAtCursor` | ใส่ข้อความ (อีโมจิ) ตรงตำแหน่งที่พิมพ์อยู่ | `src/shared/text/insertText.ts` |
+| `CopyButton` / `EmojiButton` / `FancyFontButton` | ปุ่มคัดลอก / ปุ่มอีโมจิ / ปุ่มฟอนต์ | `src/shared/parts/` |
+| `FutureMessage` / `isOpenNow` | ข้อความถึงอนาคต / ถึงวันเปิดหรือยัง | `src/features/future/` |
+| `ShopMessage` / `Product` / `Order` | ชุดข้อความ / สินค้า / ออเดอร์ | `src/features/shop/types.ts` |
 
 ## คำจาก React / ไลบรารี ที่เปลี่ยนชื่อไม่ได้
 บางคำมาจากเครื่องมือภายนอก ต้องใช้ตามนั้น

@@ -4,6 +4,7 @@
 import { useRef, type ReactNode } from 'react'
 import type { Editor } from '@tiptap/react'
 import { Bold, Italic, Heading2, List, ListChecks, Quote, ImagePlus, Clapperboard, Undo2, Redo2 } from 'lucide-react'
+import { EmojiButton } from '@/shared/parts/EmojiButton'
 
 interface EditorToolbarProps {
   editor: Editor | null
@@ -59,6 +60,7 @@ export function EditorToolbar({ editor, onChooseFiles, isUploading }: EditorTool
       <ToolButton label="ใส่วิดีโอ" onClick={() => videoInput.current?.click()} isDisabled={isUploading}>
         <Clapperboard size={18} />
       </ToolButton>
+      <EmojiButton onPick={(emoji) => editor.chain().focus().insertContent(emoji).run()} />
 
       <span className="mx-1 h-6 w-px flex-none bg-line" aria-hidden="true" />
 

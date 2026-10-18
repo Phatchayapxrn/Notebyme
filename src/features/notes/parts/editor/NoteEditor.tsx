@@ -79,6 +79,9 @@ export function NoteEditor({ startContent, onChange, uploadOneFile, isUploading 
       VideoBlock,
     ],
     content: startContent ?? '',
+    // ตอนคัดลอกข้อความออกไปวางที่อื่น: คั่นแต่ละบรรทัดด้วยการขึ้นบรรทัดใหม่ 1 ครั้ง
+    // (ค่าเดิมของ TipTap คั่น 2 ครั้ง ทำให้วางแล้วมีบรรทัดว่างแทรกทุกบรรทัด)
+    coreExtensionOptions: { clipboardTextSerializer: { blockSeparator: '\n' } },
     editorProps: {
       attributes: { class: 'note-content', 'aria-label': 'เนื้อหาไอเดีย' },
       // วางรูปจาก clipboard (Ctrl+V)

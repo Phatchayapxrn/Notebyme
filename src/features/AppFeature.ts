@@ -29,6 +29,8 @@ export interface AppFeature {
   pages: RouteObject[]
   /** การ์ดที่จะไปโชว์ในหน้าแรก (ไม่ใส่ก็ได้) */
   homeCard?: ComponentType
+  /** ลำดับการ์ดในหน้าแรก (เลขน้อยอยู่บน / ไม่ใส่ = ใช้ menuOrder) */
+  homeOrder?: number
   /** กล่องเล็กที่จะโชว์ในแถบขวา บนจอคอม (ไม่ใส่ก็ได้) */
   sideCard?: ComponentType
   /** ถ้าระบบนี้มีของที่ลบไปถังขยะได้ ให้ใส่วิธีจัดการตรงนี้ (ไม่ใส่ก็ได้) */
