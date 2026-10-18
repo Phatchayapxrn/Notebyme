@@ -62,6 +62,7 @@ Supabase (ฐานข้อมูลบนเน็ต)       ← src/shared/da
 | `parts/` | ชิ้นส่วนหน้าจอ เช่น ปุ่ม กล่อง แท็บ (ดู [02-design-system.md](02-design-system.md)) |
 | `layout/` | โครงหน้า: เมนูซ้าย เมนูล่าง แถบขวา |
 | `theme/` | โหมดสว่าง / มืด (`themeTools.ts`, `ThemeButton.tsx`) |
+| `access/` | ยศ / แอดมิน : `useAccess()` เห็นระบบไหนได้, `FeatureGate` กันหน้าที่ไม่มีสิทธิ์ (ดู [08-roles.md](08-roles.md)) |
 | `text/` | ตัวช่วยข้อความ: `copyText.ts` คัดลอก + จัดบรรทัด, `fancyLetters.ts` ฟอนต์พิเศษ, `insertText.ts` ใส่ข้อความตรงเคอร์เซอร์ |
 
 ### `src/shared/groups/` (หมวดหมู่)

@@ -3,16 +3,22 @@
 //   จอคอม  : เมนูซ้าย | เนื้อหาตรงกลาง | แถบขวา
 //   มือถือ : หัวเว็บด้านบน | เนื้อหา | เมนูล่าง
 // เนื้อหาของแต่ละหน้าจะไปโผล่ตรง <Outlet />
+// ระบบที่ไม่มีสิทธิ์เห็น (ยศ) จะถูกเอาออกจากเมนู หน้าแรก ถังขยะ และแถบขวา ตั้งแต่ตรงนี้
 // =====================================================================
 import { Link, Outlet } from 'react-router-dom'
 import type { AppFeature } from '@/features/AppFeature'
 import { ThemeButton } from '@/shared/theme/ThemeButton'
+import { useAccess } from '@/shared/access/AccessProvider'
 import { SideMenu } from './SideMenu'
 import { BottomMenu } from './BottomMenu'
 import { RightSideBox } from './RightSideBox'
 import type { LayoutContext } from './useAllFeatures'
 
-export function PageLayout({ features }: { features: AppFeature[] }) {
+export function PageLayout({ features: allLoginFeatures }: { features: AppFeature[] }) {
+  // เอาเฉพาะระบบที่คนนี้มีสิทธิ์เห็น
+  const { canSee } = useAccess()
+  const features = allLoginFeatures.filter((feature) => canSee(feature.id))
+
   // เอาเฉพาะระบบที่ต้องโชว์ในเมนู แล้วเรียงตามลำดับ
   const menuFeatures = features
     .filter((feature) => feature.showInMenu !== false && !feature.isPublic)

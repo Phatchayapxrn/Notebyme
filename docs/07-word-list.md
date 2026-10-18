@@ -135,6 +135,9 @@
 | `deleteOldTrash` / `TRASH_KEEP_DAYS` | ลบของในถังเกิน 30 วัน | `src/features/trash/deleteOldTrash.ts` |
 | `NoteEditor` / `PictureBlock` / `VideoBlock` | ช่องเขียนโน๊ต / บล็อกรูป / บล็อกวิดีโอ | `src/features/notes/parts/editor/` |
 | `useTheme` / `ThemeButton` / `ThemePicker` | โหมดสว่าง/มืด | `src/shared/theme/` |
+| `useAccess` / `canSee` / `FeatureGate` | เห็นระบบไหนได้ / กันหน้าที่ไม่มีสิทธิ์ | `src/shared/access/AccessProvider.tsx` |
+| `Role` / `RoleMember` / `FeatureRule` | ยศ / คนในยศ / กฎการมองเห็นระบบ | `src/shared/access/accessDatabase.ts` |
+| `isAdmin` / `isLocked` | เป็นแอดมินไหม / ระบบนี้ล็อกให้เฉพาะยศไหม | |
 | `copyText` / `cleanText` | คัดลอก / จัดบรรทัด (ยุบบรรทัดว่างที่ซ้อนกัน) | `src/shared/text/copyText.ts` |
 | `toFancyLetters` / `toNormalLetters` | เปลี่ยนเป็นฟอนต์พิเศษ / ล้างกลับเป็นตัวปกติ | `src/shared/text/fancyLetters.ts` |
 | `insertAtCursor` | ใส่ข้อความ (อีโมจิ) ตรงตำแหน่งที่พิมพ์อยู่ | `src/shared/text/insertText.ts` |

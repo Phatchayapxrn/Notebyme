@@ -7,6 +7,7 @@
 | `001_start.sql` | ตาราง `groups`, `notes`, `tasks` + กฎความปลอดภัย + เปิดอัปเดตสด |
 | `002_files.sql` | ถังเก็บไฟล์ `user-files` + ตาราง `files` |
 | `003_future_and_shop.sql` | ตาราง `future_messages`, `shop_messages`, `shop_products`, `shop_orders` |
+| `004_roles.sql` | ตาราง `app_admins`, `roles`, `role_members`, `feature_rules` + ล็อกระบบตามยศ (ดู [08-roles.md](08-roles.md)) |
 
 > รันซ้ำได้ ไม่พัง (ใช้ `if not exists` / `drop ... if exists`)
 > **เพิ่มตารางใหม่:** สร้างไฟล์เลขถัดไป เช่น `003_diary.sql` แล้วไปรันใน SQL Editor

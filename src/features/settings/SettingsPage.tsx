@@ -2,6 +2,7 @@
 // SettingsPage : หน้าตั้งค่า (/settings)
 //   - บัญชี (อีเมล + ออกจากระบบ)
 //   - โหมดสี (สว่าง / มืด / ตามเครื่อง)
+//   - ยศ + ใครเห็นระบบไหน (เฉพาะแอดมินเห็นกล่องนี้)
 //   - จัดการหมวดหมู่
 //   - พื้นที่เก็บไฟล์ที่ใช้ไป
 //   - สำรองข้อมูล (ดาวน์โหลดเป็นไฟล์ .json)
@@ -19,12 +20,15 @@ import { RoundButton } from '@/shared/parts/RoundButton'
 import { useShowMessage } from '@/shared/parts/PopupMessage'
 import { toDateText } from '@/shared/dateTools'
 import { ThemePicker } from '@/shared/theme/ThemeButton'
+import { useAccess } from '@/shared/access/AccessProvider'
+import { RoleManager } from './RoleManager'
 import { logOut } from '../login/loginActions'
 import { GroupManager } from './GroupManager'
 
 export function SettingsPage() {
   const { user } = useLogin()
   const features = useAllFeatures()
+  const { isAdmin } = useAccess()
   const showMessage = useShowMessage()
   const [usedSpace, setUsedSpace] = useState<number | null>(null)
   const [isMakingBackup, setIsMakingBackup] = useState(false)
@@ -84,6 +88,12 @@ export function SettingsPage() {
           <p className="small-label mb-3">โหมดสี</p>
           <ThemePicker />
         </WindowBox>
+
+        {isAdmin && (
+          <WindowBox title="admin.exe">
+            <RoleManager />
+          </WindowBox>
+        )}
 
         <WindowBox title="groups.exe">
           <p className="small-label mb-3">หมวดหมู่</p>
