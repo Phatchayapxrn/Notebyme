@@ -33,10 +33,21 @@ export async function getAllMailSets(): Promise<MailSet[]> {
     .sort(sortSets)
 }
 
-/** เพิ่มชุดใหม่ (ช่องว่าง DEFAULT_FIELD_COUNT ช่อง) คืน id ของชุดที่เพิ่ม */
-export async function addMailSet(orderNumber: number): Promise<string> {
-  const fields: MailField[] = Array.from({ length: DEFAULT_FIELD_COUNT }, () => ({ label: '', value: '' }))
-  return insertRow(MAILS_TABLE, { title: '', fields, order_number: orderNumber })
+/** เพิ่มชุดใหม่ คืน id ของชุดที่เพิ่ม (ไม่ส่ง fields มา = ช่องว่าง DEFAULT_FIELD_COUNT ช่อง) */
+export async function addMailSet(orderNumber: number, fields?: MailField[]): Promise<string> {
+  const newFields = fields ?? Array.from({ length: DEFAULT_FIELD_COUNT }, () => ({ label: '', value: '' }))
+  return insertRow(MAILS_TABLE, { title: '', fields: newFields, order_number: orderNumber })
+}
+
+/**
+ * แยกข้อความที่วางมา เป็นช่องข้อมูล ช่องละ 1 บรรทัด (ตัดช่องว่างหัวท้าย ข้ามบรรทัดว่าง)
+ * เช่น "a@b.com\n1234\nอื่นๆ" → 3 ช่อง
+ */
+export function splitTextToValues(text: string): string[] {
+  return text
+    .split(/\r\n|\r|\n/)
+    .map((line) => line.trim())
+    .filter(Boolean)
 }
 
 /** แก้ชื่อ / ช่องข้อมูลของชุด */

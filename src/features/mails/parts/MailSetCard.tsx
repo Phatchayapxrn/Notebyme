@@ -4,12 +4,12 @@
 //   เปิด  : ช่องข้อมูลทีละช่อง แต่ละช่องมีปุ่มคัดลอกมุมขวา
 //   แก้ไข : แก้ชื่อชุด / ชื่อช่อง / ค่า เพิ่ม-ลบช่อง ลบทั้งชุด (กด "บันทึก" ถึงจะเก็บ)
 // =====================================================================
-import { useState } from 'react'
+import { useState, type ClipboardEvent } from 'react'
 import { ChevronDown, Copy, Pencil, Plus, Trash2, X } from 'lucide-react'
 import { RoundButton, IconButton } from '@/shared/parts/RoundButton'
 import { useShowMessage } from '@/shared/parts/PopupMessage'
 import { copyText } from '@/shared/text/copyText'
-import { moveMailSetToTrash, saveMailSet } from '../database'
+import { moveMailSetToTrash, saveMailSet, splitTextToValues } from '../database'
 import type { MailField, MailSet } from '../types'
 
 interface MailSetCardProps {
@@ -53,6 +53,20 @@ export function MailSetCard({ set, setNumber, startEditing = false }: MailSetCar
 
   function changeField(index: number, changes: Partial<MailField>) {
     setFields((oldFields) => oldFields.map((field, fieldIndex) => (fieldIndex === index ? { ...field, ...changes } : field)))
+  }
+
+  /** วางหลายบรรทัดลงช่องค่า → บรรทัดแรกใส่ช่องนี้ บรรทัดถัดไปแทรกเป็นช่องใหม่ต่อจากช่องนี้ */
+  function pasteIntoField(event: ClipboardEvent<HTMLInputElement>, index: number) {
+    const values = splitTextToValues(event.clipboardData.getData('text/plain'))
+    if (values.length < 2) return // บรรทัดเดียว = วางตามปกติ
+    event.preventDefault()
+    setFields((oldFields) => [
+      ...oldFields.slice(0, index),
+      { ...oldFields[index], value: values[0] },
+      ...values.slice(1).map((value) => ({ label: '', value })),
+      ...oldFields.slice(index + 1),
+    ])
+    showMessage(`แยกเป็น ${values.length} ช่องแล้ว`)
   }
 
   async function save() {
@@ -156,6 +170,7 @@ export function MailSetCard({ set, setNumber, startEditing = false }: MailSetCar
                     placeholder="ค่า (สิ่งที่จะคัดลอก)"
                     value={field.value}
                     onChange={(event) => changeField(index, { value: event.target.value })}
+                    onPaste={(event) => pasteIntoField(event, index)}
                     aria-label={`ค่าช่องที่ ${index + 1}`}
                     autoComplete="off"
                     spellCheck={false}
