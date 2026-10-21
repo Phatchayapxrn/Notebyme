@@ -8,6 +8,7 @@
 // =====================================================================
 import imageCompression from 'browser-image-compression'
 import { database, getMyUserId, stopIfError } from '@/shared/database'
+import { makeId } from '@/shared/text/makeId'
 
 /** ชื่อถังเก็บไฟล์ใน Supabase Storage */
 const BUCKET_NAME = 'user-files'
@@ -79,7 +80,7 @@ async function uploadAnyFile(
 ): Promise<UploadedFile> {
   const userId = await getMyUserId()
   const fileEnding = getFileEnding(file)
-  const filePath = `${userId}/${owner.belongsToType}/${owner.belongsToId}/${crypto.randomUUID()}.${fileEnding}`
+  const filePath = `${userId}/${owner.belongsToType}/${owner.belongsToId}/${makeId()}.${fileEnding}`
 
   const { error: uploadError } = await database.storage
     .from(BUCKET_NAME)

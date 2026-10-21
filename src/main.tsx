@@ -12,10 +12,12 @@ import { LoginProvider } from '@/shared/login/LoginProvider'
 import { AccessProvider } from '@/shared/access/AccessProvider'
 import { PopupMessageProvider } from '@/shared/parts/PopupMessage'
 import { startTheme } from '@/shared/theme/themeTools'
+import { startOfflineSync } from '@/shared/offline/offlineData'
 import { App } from './App'
 import './index.css'
 
 startTheme()
+startOfflineSync() // ส่งข้อมูลที่เขียนตอนออฟไลน์ขึ้นฐานข้อมูล เมื่อเน็ตกลับมา
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

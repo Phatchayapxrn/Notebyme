@@ -2,6 +2,8 @@
 // loginActions.ts : ล็อกอิน / สมัคร / ออกจากระบบ (ผ่าน Supabase Auth)
 // =====================================================================
 import { database } from '@/shared/database'
+import { clearLocalStore } from '@/shared/offline/localStore'
+import { sendQueue } from '@/shared/offline/offlineData'
 
 /** แปลงข้อความ error ภาษาอังกฤษจาก Supabase เป็นภาษาไทยที่เข้าใจง่าย */
 function toThaiError(message: string): string {
@@ -33,5 +35,7 @@ export async function signUp(email: string, password: string): Promise<boolean> 
 
 /** ออกจากระบบ */
 export async function logOut() {
+  await sendQueue() // ส่งข้อมูลที่ค้างอยู่ขึ้นฐานข้อมูลก่อน (ถ้ามีเน็ต)
   await database.auth.signOut()
+  await clearLocalStore().catch(() => {}) // ล้างสำเนาข้อมูลในเครื่อง (กันคนอื่นที่ใช้เครื่องเดียวกันเห็น)
 }

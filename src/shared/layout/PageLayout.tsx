@@ -5,10 +5,15 @@
 // เนื้อหาของแต่ละหน้าจะไปโผล่ตรง <Outlet />
 // ระบบที่ไม่มีสิทธิ์เห็น (ยศ) จะถูกเอาออกจากเมนู หน้าแรก ถังขยะ และแถบขวา ตั้งแต่ตรงนี้
 // =====================================================================
+import { useEffect, useState } from 'react'
 import { Link, Outlet } from 'react-router-dom'
+import { Search } from 'lucide-react'
 import type { AppFeature } from '@/features/AppFeature'
 import { ThemeButton } from '@/shared/theme/ThemeButton'
 import { useAccess } from '@/shared/access/AccessProvider'
+import { SyncBadge } from '@/shared/offline/SyncBadge'
+import { IconButton } from '@/shared/parts/RoundButton'
+import { SearchBox } from '@/shared/search/SearchBox'
 import { SideMenu } from './SideMenu'
 import { BottomMenu } from './BottomMenu'
 import { RightSideBox } from './RightSideBox'
@@ -26,16 +31,43 @@ export function PageLayout({ features: allLoginFeatures }: { features: AppFeatur
 
   const hasSideBox = features.some((feature) => feature.sideCard)
 
+  // ช่องค้นหากลาง: เปิดด้วย Ctrl+K (Mac: Cmd+K) หรือกด / (ตอนไม่ได้พิมพ์อยู่ในช่องอื่น)
+  const [isSearchOpen, setIsSearchOpen] = useState(false)
+  useEffect(() => {
+    function whenKeyPressed(event: KeyboardEvent) {
+      const target = event.target as HTMLElement | null
+      const isTyping = target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target instanceof HTMLSelectElement || target?.isContentEditable
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault()
+        setIsSearchOpen(true)
+      } else if (event.key === '/' && !isTyping && !event.ctrlKey && !event.metaKey && !event.altKey) {
+        event.preventDefault()
+        setIsSearchOpen(true)
+      }
+    }
+    window.addEventListener('keydown', whenKeyPressed)
+    return () => window.removeEventListener('keydown', whenKeyPressed)
+  }, [])
+
   return (
     <div className="min-h-dvh">
-      <SideMenu menuFeatures={menuFeatures} />
+      <SyncBadge />
+      <SearchBox isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} features={features} />
+      {/* ส่วนเบื้องหลังของแต่ละระบบ (เฉพาะระบบที่มีสิทธิ์) */}
+      {features.map((feature) => (feature.backgroundPart ? <feature.backgroundPart key={feature.id} /> : null))}
+      <SideMenu menuFeatures={menuFeatures} onSearch={() => setIsSearchOpen(true)} />
 
       {/* หัวเว็บ (มือถือ) */}
       <header className="space-for-top-notch flex items-center justify-between px-5 pt-4 md:hidden">
         <Link to="/" className="font-title text-3xl font-semibold italic text-wine">
           Idea.
         </Link>
-        <ThemeButton className="-mr-2" />
+        <div className="-mr-2 flex items-center">
+          <IconButton label="ค้นหา" onClick={() => setIsSearchOpen(true)}>
+            <Search size={20} />
+          </IconButton>
+          <ThemeButton />
+        </div>
       </header>
 
       {/* เนื้อหาของหน้า */}

@@ -12,6 +12,7 @@ import { PopupBox } from '@/shared/parts/PopupBox'
 import { RoundButton } from '@/shared/parts/RoundButton'
 import { useShowMessage } from '@/shared/parts/PopupMessage'
 import { deleteFile, uploadPicture } from '@/shared/files/fileStorage'
+import { makeId } from '@/shared/text/makeId'
 import { GroupCard } from './GroupCard'
 import { GroupCover } from './GroupCover'
 import { addNewGroup, saveGroup } from './groupDatabase'
@@ -45,13 +46,13 @@ export function GroupEditBox({ isOpen, onClose, group, onSaved }: GroupEditBoxPr
   const [isUploading, setIsUploading] = useState(false)
   const pictureInput = useRef<HTMLInputElement>(null)
   // id ของหมวด (หมวดใหม่ สร้าง id ไว้ก่อน เพื่อใช้ผูกกับรูปปกที่อัปโหลด)
-  const [groupId, setGroupId] = useState(() => group?.id ?? crypto.randomUUID())
+  const [groupId, setGroupId] = useState(() => group?.id ?? makeId())
 
   // ทุกครั้งที่เปิดกล่อง: เติมข้อมูลเดิม (หรือค่าว่างถ้าสร้างใหม่)
   useEffect(() => {
     if (!isOpen) return
     setForm(group ? { name: group.name, emoji: group.emoji, color: group.color, coverPicture: group.coverPicture } : EMPTY_GROUP)
-    setGroupId(group?.id ?? crypto.randomUUID())
+    setGroupId(group?.id ?? makeId())
   }, [isOpen, group])
 
   /** แก้ค่าบางช่องในฟอร์ม */

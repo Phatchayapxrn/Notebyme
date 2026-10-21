@@ -6,6 +6,7 @@ import type { AppFeature } from '../AppFeature'
 import { NotesPage } from './pages/NotesPage'
 import { NoteEditPage } from './pages/NoteEditPage'
 import { NotesHomeCard } from './parts/NotesHomeCard'
+import { searchNotes } from './search'
 import { bringNoteBack, deleteNoteForever, getAllNotesForBackup, getNotesInTrash } from './database'
 
 export const notesFeature: AppFeature = {
@@ -19,6 +20,7 @@ export const notesFeature: AppFeature = {
     { path: '/notes/:noteId', element: <NoteEditPage /> },
   ],
   homeCard: NotesHomeCard,
+  searchItems: searchNotes,
   trashActions: {
     kindName: 'ไอเดีย',
     kindEmoji: '💡',
