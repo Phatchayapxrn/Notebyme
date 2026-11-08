@@ -24,6 +24,7 @@ import {
   isPatternCover,
   type Group,
   type GroupInput,
+  type GroupKind,
 } from './groupTypes'
 
 interface GroupEditBoxProps {
@@ -33,13 +34,17 @@ interface GroupEditBoxProps {
   group?: Group
   /** เรียกหลังบันทึกเสร็จ (ได้หมวดที่สร้างใหม่กลับไป) */
   onSaved?: (group: Group | undefined) => void
+  /** หมวดชนิดไหน (ค่าเริ่มต้น = ของไอเดีย/งาน) */
+  kind?: GroupKind
+  /** ข้อความตัวอย่างในช่องชื่อ */
+  namePlaceholder?: string
 }
 
 const EMPTY_GROUP: GroupInput = { name: '', emoji: '✨', color: GROUP_COLORS[0], coverPicture: 'pattern:hearts' }
 
-export function GroupEditBox({ isOpen, onClose, group, onSaved }: GroupEditBoxProps) {
+export function GroupEditBox({ isOpen, onClose, group, onSaved, kind = 'general', namePlaceholder = 'เช่น ไอเดียทำคอนเทนต์' }: GroupEditBoxProps) {
   const isNewGroup = !group
-  const { groups } = useGroups()
+  const { groups } = useGroups(kind)
   const showMessage = useShowMessage()
   const [form, setForm] = useState<GroupInput>(EMPTY_GROUP)
   const [isSaving, setIsSaving] = useState(false)
@@ -98,7 +103,7 @@ export function GroupEditBox({ isOpen, onClose, group, onSaved }: GroupEditBoxPr
     try {
       let savedGroup: Group | undefined
       if (isNewGroup) {
-        savedGroup = await addNewGroup({ ...form, name }, groups.length, groupId)
+        savedGroup = await addNewGroup({ ...form, name }, groups.length, groupId, kind)
       } else {
         await saveGroup(group.id, { ...form, name })
         // เปลี่ยนรูปปก: ลบรูปเก่าที่อัปโหลดไว้
@@ -131,7 +136,7 @@ export function GroupEditBox({ isOpen, onClose, group, onSaved }: GroupEditBoxPr
             className="text-input"
             value={form.name}
             onChange={(event) => changeForm({ name: event.target.value })}
-            placeholder="เช่น ไอเดียทำคอนเทนต์"
+            placeholder={namePlaceholder}
             maxLength={40}
           />
         </label>

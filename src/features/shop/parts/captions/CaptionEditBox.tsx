@@ -5,7 +5,10 @@
 //   <CaptionEditBox isOpen onClose caption={caption} />  แก้ไข
 // =====================================================================
 import { useEffect, useState, type FormEvent } from 'react'
+import { Plus } from 'lucide-react'
 import { todayAsText } from '@/shared/dateTools'
+import { GroupEditBox } from '@/shared/groups/GroupEditBox'
+import { GroupPicker } from '@/shared/groups/GroupPicker'
 import { EmojiButton } from '@/shared/parts/EmojiButton'
 import { PopupBox } from '@/shared/parts/PopupBox'
 import { RoundButton } from '@/shared/parts/RoundButton'
@@ -19,22 +22,21 @@ interface CaptionEditBoxProps {
   onClose: () => void
   /** ใส่มา = แก้ไขแคปชั่นนี้, ไม่ใส่ = เพิ่มใหม่ */
   caption?: ShopCaption
-  /** หมวดที่มีอยู่แล้ว (ไว้ให้กดเลือกเร็วๆ) */
-  categories?: string[]
   /** หมวดเริ่มต้นตอนเพิ่มใหม่ (เช่น หมวดที่กรองอยู่) */
-  defaultCategory?: string
+  defaultGroupId?: string | null
 }
 
 const STATUS_LIST: CaptionStatus[] = ['draft', 'ready', 'posted']
 
-function makeEmptyForm(category = ''): NewCaption {
-  return { text: '', postDate: todayAsText(), postTime: null, status: 'draft', platforms: [], remind: false, category }
+function makeEmptyForm(groupId: string | null = null): NewCaption {
+  return { text: '', postDate: todayAsText(), postTime: null, status: 'draft', platforms: [], remind: false, groupId }
 }
 
-export function CaptionEditBox({ isOpen, onClose, caption, categories = [], defaultCategory = '' }: CaptionEditBoxProps) {
+export function CaptionEditBox({ isOpen, onClose, caption, defaultGroupId = null }: CaptionEditBoxProps) {
   const showMessage = useShowMessage()
-  const [form, setForm] = useState<NewCaption>(makeEmptyForm)
+  const [form, setForm] = useState<NewCaption>(() => makeEmptyForm())
   const [isSaving, setIsSaving] = useState(false)
+  const [isNewGroupOpen, setIsNewGroupOpen] = useState(false)
 
   // ทุกครั้งที่เปิดกล่อง: เติมข้อมูลเดิม (หรือค่าเริ่มต้นถ้าเพิ่มใหม่)
   useEffect(() => {
@@ -48,11 +50,11 @@ export function CaptionEditBox({ isOpen, onClose, caption, categories = [], defa
             status: caption.status,
             platforms: caption.platforms,
             remind: caption.remind,
-            category: caption.category,
+            groupId: caption.groupId,
           }
-        : makeEmptyForm(defaultCategory),
+        : makeEmptyForm(defaultGroupId),
     )
-  }, [isOpen, caption, defaultCategory])
+  }, [isOpen, caption, defaultGroupId])
 
   function changeForm(changes: Partial<NewCaption>) {
     setForm((oldForm) => ({ ...oldForm, ...changes }))
@@ -73,8 +75,7 @@ export function CaptionEditBox({ isOpen, onClose, caption, categories = [], defa
       return
     }
     // ไม่มีวันที่ → ไม่มีเวลา และไม่เตือน (เก็บในคลังสำรอง)
-    const baseForm: NewCaption = { ...form, category: form.category.trim() }
-    const cleanForm: NewCaption = form.postDate ? baseForm : { ...baseForm, postTime: null, remind: false }
+    const cleanForm: NewCaption = form.postDate ? form : { ...form, postTime: null, remind: false }
     setIsSaving(true)
     try {
       if (caption) await saveShopCaption(caption.id, cleanForm)
@@ -89,6 +90,7 @@ export function CaptionEditBox({ isOpen, onClose, caption, categories = [], defa
   }
 
   return (
+    <>
     <PopupBox isOpen={isOpen} title={caption ? 'แก้ไขแคปชั่น' : 'แคปชั่นใหม่'} onClose={onClose}>
       <form onSubmit={submit} className="flex flex-col gap-4">
         <div>
@@ -136,24 +138,13 @@ export function CaptionEditBox({ isOpen, onClose, caption, categories = [], defa
 
         {/* หมวด */}
         <div>
-          <p className="small-label mb-2">หมวด (พิมพ์ตั้งเองได้)</p>
-          <input
-            className="text-input"
-            value={form.category}
-            onChange={(event) => changeForm({ category: event.target.value })}
-            placeholder="เช่น โปรโมชั่น, รีวิว, ทักทาย"
-            maxLength={30}
-            aria-label="หมวดของแคปชั่น"
-          />
-          {categories.length > 0 && (
-            <div className="mt-2 flex flex-wrap gap-2">
-              {categories.map((category) => (
-                <TagButton key={category} isSelected={form.category.trim() === category} onClick={() => changeForm({ category: form.category.trim() === category ? '' : category })}>
-                  {category}
-                </TagButton>
-              ))}
-            </div>
-          )}
+          <p className="small-label mb-2">หมวด</p>
+          <div className="flex flex-wrap items-center gap-2">
+            <GroupPicker kind="caption" selectedGroupId={form.groupId} onSelect={(groupId) => changeForm({ groupId })} />
+            <TagButton onClick={() => setIsNewGroupOpen(true)}>
+              <Plus size={15} /> หมวดใหม่
+            </TagButton>
+          </div>
         </div>
 
         {/* แพลตฟอร์ม */}
@@ -200,5 +191,14 @@ export function CaptionEditBox({ isOpen, onClose, caption, categories = [], defa
         </div>
       </form>
     </PopupBox>
+    {/* อยู่นอกฟอร์มแคปชั่น: กันการกดบันทึกหมวดไปทำให้ฟอร์มแคปชั่นถูกส่งด้วย (event ของ React ลอยผ่าน portal ขึ้นไปหาฟอร์มแม่) */}
+    <GroupEditBox
+      isOpen={isNewGroupOpen}
+      onClose={() => setIsNewGroupOpen(false)}
+      kind="caption"
+      namePlaceholder="เช่น โปรโมชั่น, รีวิวลูกค้า"
+      onSaved={(group) => group && changeForm({ groupId: group.id })}
+    />
+    </>
   )
 }

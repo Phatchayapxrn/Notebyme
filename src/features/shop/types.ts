@@ -45,10 +45,10 @@ export interface ShopCaption {
   platforms: string[]
   /** true = เตือนตอนถึงเวลาโพสต์ */
   remind: boolean
-  /** หมวดที่พิมพ์ตั้งเอง เช่น "โปรโมชั่น" (ว่าง = ไม่มีหมวด) */
-  category: string
+  /** หมวดของแคปชั่น (id ของ groups ชนิด caption) null = ไม่มีหมวด */
+  groupId: string | null
   createdAt: string
 }
 
 /** ข้อมูลที่ใช้ตอนเพิ่ม/แก้แคปชั่น */
-export type NewCaption = Pick<ShopCaption, 'text' | 'postDate' | 'postTime' | 'status' | 'platforms' | 'remind' | 'category'>
+export type NewCaption = Pick<ShopCaption, 'text' | 'postDate' | 'postTime' | 'status' | 'platforms' | 'remind' | 'groupId'>

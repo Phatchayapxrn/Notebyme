@@ -3,7 +3,7 @@
 // =====================================================================
 import { database, stopIfError, tellListChanged } from '@/shared/database'
 import { deleteAllFilesOf } from '@/shared/files/fileStorage'
-import { isPatternCover, type Group, type GroupInput } from './groupTypes'
+import { isPatternCover, type Group, type GroupInput, type GroupKind } from './groupTypes'
 
 const TABLE_NAME = 'groups'
 
@@ -11,6 +11,8 @@ const TABLE_NAME = 'groups'
 function rowToGroup(row: Record<string, unknown>): Group {
   return {
     id: row.id as string,
+    // แถวเก่าที่ยังไม่มีคอลัมน์ kind = หมวดของไอเดีย/งาน
+    kind: ((row.kind as GroupKind | undefined) ?? 'general'),
     name: row.name as string,
     emoji: row.emoji as string,
     color: row.color as string,
@@ -20,19 +22,21 @@ function rowToGroup(row: Record<string, unknown>): Group {
   }
 }
 
-/** ดึงหมวดหมู่ทั้งหมด เรียงตามลำดับ */
-export async function getAllGroups(): Promise<Group[]> {
+/** ดึงหมวดหมู่ของชนิดนั้น (ค่าเริ่มต้น = ของไอเดีย/งาน) เรียงตามลำดับ — กรองฝั่งโค้ด เผื่อยังไม่ได้รัน SQL ที่เพิ่มคอลัมน์ kind */
+export async function getAllGroups(kind: GroupKind = 'general'): Promise<Group[]> {
   const { data, error } = await database.from(TABLE_NAME).select('*').order('order_number').order('created_at')
   stopIfError(error)
-  return (data ?? []).map(rowToGroup)
+  return (data ?? []).map(rowToGroup).filter((group) => group.kind === kind)
 }
 
 /** เพิ่มหมวดใหม่ (ต่อท้ายสุด) - groupId = กำหนด id เองได้ (ใช้ตอนอัปโหลดรูปปกก่อนสร้างหมวด) */
-export async function addNewGroup(input: GroupInput, orderNumber: number, groupId?: string): Promise<Group> {
+export async function addNewGroup(input: GroupInput, orderNumber: number, groupId?: string, kind: GroupKind = 'general'): Promise<Group> {
   const { data, error } = await database
     .from(TABLE_NAME)
     .insert({
       ...(groupId ? { id: groupId } : {}),
+      // ใส่ kind เฉพาะหมวดแคปชั่น (หมวดไอเดีย/งานใช้ค่าเริ่มต้นของฐานข้อมูล จึงไม่พังถ้ายังไม่ได้รัน SQL)
+      ...(kind !== 'general' ? { kind } : {}),
       name: input.name,
       emoji: input.emoji,
       color: input.color,
@@ -83,4 +87,5 @@ export async function deleteGroup(group: Group) {
   // โน๊ตและงานเปลี่ยนเป็น "ไม่มีหมวด" ให้หน้าเหล่านั้นโหลดใหม่ด้วย
   tellListChanged('notes')
   tellListChanged('tasks')
+  tellListChanged('shop_captions')
 }

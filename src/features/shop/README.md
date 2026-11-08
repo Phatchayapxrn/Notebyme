@@ -10,7 +10,8 @@
 ## แคปชั่น ทำอะไรได้บ้าง
 - **วางแคปชั่น 1 ครั้ง = ได้ 1 ใบ** : เลือกวันที่โพสต์ แล้ววางในช่องเส้นประ (ล้างวันที่ = เก็บเข้าคลังสำรอง)
 - **กลุ่มที่โชว์** : เลยกำหนด → วันนี้ → วันที่กำลังจะถึง → คลังสำรอง → โพสต์แล้ว (พับไว้)
-- **หมวด** : พิมพ์ตั้งชื่อหมวดเองในแต่ละใบ (เช่น โปรโมชั่น, รีวิว) มีแถบกรองตามหมวด + ช่องค้นหา (ต้องรัน `014_shop_captions_category.sql`)
+- **หมวด (แบบหน้าไอเดีย)** : สร้างหมวดไว้ก่อน (ชื่อ อีโมจิ สี ภาพปก) โชว์เป็นการ์ดหมวดด้านบน กดการ์ดเพื่อดูเฉพาะหมวดนั้น (ลิงก์ `?tab=captions&group=<id>`) แล้ววางแคปชั่น → เข้าหมวดที่เลือกอยู่ทันที ปุ่มเฟืองข้างๆ = จัดการหมวด (เปลี่ยนชื่อ/เรียง/ลบ) ลบหมวดแล้วแคปชั่นไม่หาย กลายเป็น "ไม่มีหมวด" มีช่องค้นหาด้วย (ต้องรัน `015_caption_groups.sql`)
+- หมวดแคปชั่นแยกชุดจากหมวดไอเดีย/งาน (ใช้ตาราง `groups` เดียวกัน แต่คอลัมน์ `kind = caption`) เรียกใช้ด้วย `useGroups('caption')`
 - **ปุ่มคัดลอก** ในแต่ละใบ, ติ๊ก "โพสต์แล้ว" ได้, กดข้อความเพื่อแก้ไข (วัน-เวลา แพลตฟอร์มหลายอัน สถานะ เตือน)
 - **เตือนตอนถึงเวลาโพสต์** : `parts/captions/CaptionReminders.tsx` (ทำงานตอนเปิดแอพอยู่ ไม่ระบุเวลา = เตือน 9:00)
 
@@ -42,7 +43,7 @@
 `parts/CopyButton.tsx`, `parts/EmojiButton.tsx`, `parts/FancyFontButton.tsx`, `text/copyText.ts`, `text/fancyLetters.ts`, `text/insertText.ts`
 
 ## ตารางในฐานข้อมูล
-`shop_messages`, `shop_products`, `shop_orders` (สร้างด้วย `supabase/sql/003_future_and_shop.sql`) และ `shop_captions` (`supabase/sql/013_shop_captions.sql` + `014_shop_captions_category.sql`) ดูรายละเอียดใน `docs/03-database.md`
+`shop_messages`, `shop_products`, `shop_orders` (สร้างด้วย `supabase/sql/003_future_and_shop.sql`) และ `shop_captions` (`supabase/sql/013_shop_captions.sql` + `015_caption_groups.sql`; ไฟล์ 014 เป็นของเก่า 015 ย้ายข้อมูลให้) ดูรายละเอียดใน `docs/03-database.md`
 
 ## อยากแก้...
 | อยาก | แก้ที่ |

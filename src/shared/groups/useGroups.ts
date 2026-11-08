@@ -5,9 +5,10 @@
 import { useCallback } from 'react'
 import { useLiveList } from '@/shared/data/useLiveList'
 import { getAllGroups } from './groupDatabase'
+import type { GroupKind } from './groupTypes'
 
-export function useGroups() {
-  const { items: groups, isLoading } = useLiveList({ tableName: 'groups', getList: getAllGroups })
+export function useGroups(kind: GroupKind = 'general') {
+  const { items: groups, isLoading } = useLiveList({ tableName: 'groups', getList: () => getAllGroups(kind) })
 
   /** หาหมวดจาก id (ไม่เจอ = undefined) */
   const findGroup = useCallback(

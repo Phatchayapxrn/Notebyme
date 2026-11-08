@@ -83,7 +83,7 @@ export const moveShopMessageToTrash = (messageId: string) => moveToTrash(MESSAGE
 export async function getAllShopCaptions(): Promise<ShopCaption[]> {
   const { data, error } = await database
     .from(CAPTIONS_TABLE)
-    .select('id, text, post_date, post_time, status, platforms, remind, category, created_at')
+    .select('id, text, post_date, post_time, status, platforms, remind, group_id, created_at')
     .is('deleted_at', null)
     .order('post_date', { ascending: true, nullsFirst: false })
     .order('post_time', { ascending: true, nullsFirst: false })
@@ -98,7 +98,7 @@ export async function getAllShopCaptions(): Promise<ShopCaption[]> {
     status: row.status as CaptionStatus,
     platforms: (row.platforms as string[] | null) ?? [],
     remind: Boolean(row.remind),
-    category: (row.category as string | null) ?? '',
+    groupId: (row.group_id as string | null) ?? null,
     createdAt: row.created_at as string,
   }))
 }
@@ -112,7 +112,7 @@ function captionToRow(caption: Partial<NewCaption>): Record<string, unknown> {
   if (caption.status !== undefined) row.status = caption.status
   if (caption.platforms !== undefined) row.platforms = caption.platforms
   if (caption.remind !== undefined) row.remind = caption.remind
-  if (caption.category !== undefined) row.category = caption.category
+  if (caption.groupId !== undefined) row.group_id = caption.groupId
   return row
 }
 

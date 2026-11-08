@@ -6,6 +6,7 @@
 // =====================================================================
 import { Check, RotateCcw, Trash2 } from 'lucide-react'
 import { showFullDate } from '@/shared/dateTools'
+import type { Group } from '@/shared/groups/groupTypes'
 import { CopyButton } from '@/shared/parts/CopyButton'
 import { useShowMessage } from '@/shared/parts/PopupMessage'
 import { IconButton } from '@/shared/parts/RoundButton'
@@ -14,13 +15,15 @@ import { CAPTION_STATUS_INFO, PLATFORM_LIST, type ShopCaption } from '../../type
 
 interface CaptionCardProps {
   caption: ShopCaption
+  /** หมวดของแคปชั่นนี้ (ไม่มีหมวด = ไม่ใส่) */
+  group?: Group
   /** กดที่ข้อความ = เปิดกล่องแก้ไข */
   onEdit: (caption: ShopCaption) => void
   /** true = โชว์วันที่ในหัวการ์ด (ในกลุ่มที่ไม่ได้แยกตามวันอยู่แล้ว) */
   showDate?: boolean
 }
 
-export function CaptionCard({ caption, onEdit, showDate = false }: CaptionCardProps) {
+export function CaptionCard({ caption, group, onEdit, showDate = false }: CaptionCardProps) {
   const showMessage = useShowMessage()
   const isPosted = caption.status === 'posted'
   const statusInfo = CAPTION_STATUS_INFO[caption.status]
@@ -55,8 +58,10 @@ export function CaptionCard({ caption, onEdit, showDate = false }: CaptionCardPr
             {caption.postTime && `${caption.postTime} น.`}
           </span>
         )}
-        {caption.category && (
-          <span className="rounded-full border border-line bg-paper px-2 py-0.5 text-[11px] text-ink">🏷️ {caption.category}</span>
+        {group && (
+          <span className="rounded-full border border-line bg-paper px-2 py-0.5 text-[11px] text-ink">
+            {group.emoji} {group.name}
+          </span>
         )}
         {platforms.map((platform) => (
           <span

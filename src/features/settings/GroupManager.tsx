@@ -8,14 +8,21 @@ import { useGroups } from '@/shared/groups/useGroups'
 import { GroupEditBox } from '@/shared/groups/GroupEditBox'
 import { GroupCover } from '@/shared/groups/GroupCover'
 import { deleteGroup, saveGroupOrder } from '@/shared/groups/groupDatabase'
-import type { Group } from '@/shared/groups/groupTypes'
+import type { Group, GroupKind } from '@/shared/groups/groupTypes'
 import { IconButton, RoundButton } from '@/shared/parts/RoundButton'
 import { ConfirmBox } from '@/shared/parts/PopupBox'
 import { EmptyMessage } from '@/shared/parts/EmptyMessage'
 import { useShowMessage } from '@/shared/parts/PopupMessage'
 
-export function GroupManager() {
-  const { groups } = useGroups()
+interface GroupManagerProps {
+  /** หมวดชนิดไหน (ค่าเริ่มต้น = ของไอเดีย/งาน) */
+  kind?: GroupKind
+  /** ชื่อของที่อยู่ในหมวด ใช้ในข้อความ เช่น "ไอเดียและงาน" / "แคปชั่น" */
+  itemsName?: string
+}
+
+export function GroupManager({ kind = 'general', itemsName = 'ไอเดียและงาน' }: GroupManagerProps) {
+  const { groups } = useGroups(kind)
   const showMessage = useShowMessage()
   const [groupToEdit, setGroupToEdit] = useState<Group | undefined>()
   const [isEditBoxOpen, setIsEditBoxOpen] = useState(false)
@@ -50,7 +57,7 @@ export function GroupManager() {
   return (
     <div className="flex flex-col gap-3">
       {groups.length === 0 ? (
-        <EmptyMessage emoji="🗂️" title="ยังไม่มีหมวด" text="สร้างหมวดไว้แยกไอเดียและงานเป็นกลุ่มๆ" />
+        <EmptyMessage emoji="🗂️" title="ยังไม่มีหมวด" text={`สร้างหมวดไว้แยก${itemsName}เป็นกลุ่มๆ`} />
       ) : (
         <ul className="flex flex-col divide-y divide-line rounded-2xl border-[1.5px] border-line">
           {groups.map((group, index) => (
@@ -79,11 +86,11 @@ export function GroupManager() {
         หมวดใหม่
       </RoundButton>
 
-      <GroupEditBox isOpen={isEditBoxOpen} group={groupToEdit} onClose={() => setIsEditBoxOpen(false)} />
+      <GroupEditBox isOpen={isEditBoxOpen} group={groupToEdit} onClose={() => setIsEditBoxOpen(false)} kind={kind} />
       <ConfirmBox
         isOpen={groupToDelete !== null}
         title="ลบหมวดนี้?"
-        text={`ลบหมวด "${groupToDelete?.name}" แล้ว ไอเดียและงานในหมวดนี้จะไม่หาย แค่กลายเป็น "ไม่มีหมวด"`}
+        text={`ลบหมวด "${groupToDelete?.name}" แล้ว ${itemsName}ในหมวดนี้จะไม่หาย แค่กลายเป็น "ไม่มีหมวด"`}
         confirmText="ลบหมวด"
         isDanger
         onConfirm={() => groupToDelete && confirmDelete(groupToDelete)}
