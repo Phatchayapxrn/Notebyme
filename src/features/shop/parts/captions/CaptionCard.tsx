@@ -1,10 +1,12 @@
 // =====================================================================
 // CaptionCard : แคปชั่น 1 อัน
 //   - หัวการ์ด : วัน-เวลาโพสต์ + ป้ายแพลตฟอร์ม (สี) + สถานะ
-//   - ตัวการ์ด : ข้อความแคปชั่น (กดเพื่อแก้ไข)
+//   - กดหัวการ์ดเพื่อย่อ/ขยาย (ย่อ = เห็นตัวอย่างบรรทัดเดียว)
+//   - ตัวการ์ด : ข้อความแคปชั่นเต็ม (กดเพื่อแก้ไข)
 //   - ท้ายการ์ด : ปุ่มคัดลอก / ติ๊กโพสต์แล้ว / ย้ายไปถังขยะ
 // =====================================================================
-import { Check, RotateCcw, Trash2 } from 'lucide-react'
+import { useState } from 'react'
+import { Check, ChevronDown, RotateCcw, Trash2 } from 'lucide-react'
 import { showFullDate } from '@/shared/dateTools'
 import type { Group } from '@/shared/groups/groupTypes'
 import { CopyButton } from '@/shared/parts/CopyButton'
@@ -25,6 +27,7 @@ interface CaptionCardProps {
 
 export function CaptionCard({ caption, group, onEdit, showDate = false }: CaptionCardProps) {
   const showMessage = useShowMessage()
+  const [isOpen, setIsOpen] = useState(false) // false = ย่อ (เห็นแค่หัว + ตัวอย่างบรรทัดเดียว)
   const isPosted = caption.status === 'posted'
   const statusInfo = CAPTION_STATUS_INFO[caption.status]
   const platforms = PLATFORM_LIST.filter((platform) => caption.platforms.includes(platform.id))
@@ -50,7 +53,12 @@ export function CaptionCard({ caption, group, onEdit, showDate = false }: Captio
 
   return (
     <article className={`overflow-hidden rounded-3xl border border-line bg-paper shadow-soft ${isPosted ? 'opacity-70' : ''}`}>
-      <header className="flex flex-wrap items-center gap-1.5 border-b border-line bg-blush/40 px-4 py-2">
+      <button
+        type="button"
+        onClick={() => setIsOpen((wasOpen) => !wasOpen)}
+        aria-expanded={isOpen}
+        className={`flex w-full flex-wrap items-center gap-1.5 bg-blush/40 px-4 py-2 text-left ${isOpen ? 'border-b border-line' : ''}`}
+      >
         {(showDate || caption.postTime) && (
           <span className="mr-1 font-typewriter text-xs text-ink">
             {showDate && caption.postDate && showFullDate(caption.postDate)}
@@ -81,28 +89,46 @@ export function CaptionCard({ caption, group, onEdit, showDate = false }: Captio
         <span className={`rounded-full px-2.5 py-0.5 text-xs ${statusInfo.badgeClass}`}>
           {statusInfo.emoji} {statusInfo.name}
         </span>
-      </header>
-
-      <button
-        type="button"
-        onClick={() => onEdit(caption)}
-        className="block w-full px-4 py-3 text-left text-[16px] leading-relaxed text-ink transition hover:bg-blush/30"
-        aria-label="แก้ไขแคปชั่น"
-      >
-        <span className="line-clamp-6 whitespace-pre-line">{caption.text || <span className="text-soft">(ว่าง)</span>}</span>
+        <ChevronDown size={18} className={`flex-none text-soft transition ${isOpen ? 'rotate-180' : ''}`} aria-hidden="true" />
       </button>
 
-      <footer className="flex items-center gap-1 border-t border-line px-3 py-2">
-        <CopyButton isMain getText={() => caption.text} doneMessage="คัดลอกแคปชั่นแล้ว" />
-        <IconButton label={isPosted ? 'ย้อนกลับเป็นพร้อมโพสต์' : 'ติ๊กว่าโพสต์แล้ว'} onClick={togglePosted}>
-          {isPosted ? <RotateCcw size={18} /> : <Check size={19} />}
-        </IconButton>
-        <div className="flex-1" />
-        <span className="font-typewriter text-xs text-soft">{Array.from(caption.text).length} ตัวอักษร</span>
-        <IconButton label="ย้ายไปถังขยะ" onClick={moveToTrash}>
-          <Trash2 size={17} />
-        </IconButton>
-      </footer>
+      {/* ปิดอยู่ : โชว์ตัวอย่างบรรทัดเดียว */}
+      {!isOpen && (
+        <button
+          type="button"
+          onClick={() => setIsOpen(true)}
+          className="block w-full truncate px-4 py-2.5 text-left text-[15px] text-soft"
+          aria-label="เปิดดูแคปชั่น"
+        >
+          {caption.text.replace(/\s+/g, ' ').trim() || '(ว่าง)'}
+        </button>
+      )}
+
+      {/* เปิดอยู่ : เห็นข้อความทั้งหมด */}
+      {isOpen && (
+        <>
+          <button
+            type="button"
+            onClick={() => onEdit(caption)}
+            className="block w-full px-4 py-3 text-left text-[16px] leading-relaxed text-ink transition hover:bg-blush/30"
+            aria-label="แก้ไขแคปชั่น"
+          >
+            <span className="whitespace-pre-line break-words">{caption.text || <span className="text-soft">(ว่าง)</span>}</span>
+          </button>
+
+          <footer className="flex items-center gap-1 border-t border-line px-3 py-2">
+            <CopyButton isMain getText={() => caption.text} doneMessage="คัดลอกแคปชั่นแล้ว" />
+            <IconButton label={isPosted ? 'ย้อนกลับเป็นพร้อมโพสต์' : 'ติ๊กว่าโพสต์แล้ว'} onClick={togglePosted}>
+              {isPosted ? <RotateCcw size={18} /> : <Check size={19} />}
+            </IconButton>
+            <div className="flex-1" />
+            <span className="font-typewriter text-xs text-soft">{Array.from(caption.text).length} ตัวอักษร</span>
+            <IconButton label="ย้ายไปถังขยะ" onClick={moveToTrash}>
+              <Trash2 size={17} />
+            </IconButton>
+          </footer>
+        </>
+      )}
     </article>
   )
 }
