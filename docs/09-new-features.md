@@ -16,6 +16,7 @@
 | 011_calendar.sql | ปฏิทิน | `calendar` |
 | 012_memo.sql | โน๊ตแบบไอโฟน (โฟลเดอร์ ปักหมุด จัดรูปแบบ ตาราง) — ล็อกตั้งแต่เริ่ม (มีแค่แอดมินเห็น) | `memo` |
 | 013_shop_captions.sql | แท็บแคปชั่นในหน้าร้าน (ใช้สิทธิ์เดียวกับร้าน) | `shop` |
+| 014_shop_captions_category.sql | เพิ่มคอลัมน์ "หมวด" ให้แคปชั่น | `shop` |
 
 ## ออฟไลน์
 - โค้ดอยู่ที่ `src/shared/offline/` — ระบบใหม่ทุกระบบอ่าน/เขียนผ่าน `listRows / insertRow / updateRow / deleteRow` (ไฟล์ `offlineData.ts`)

@@ -19,15 +19,19 @@ interface CaptionEditBoxProps {
   onClose: () => void
   /** ใส่มา = แก้ไขแคปชั่นนี้, ไม่ใส่ = เพิ่มใหม่ */
   caption?: ShopCaption
+  /** หมวดที่มีอยู่แล้ว (ไว้ให้กดเลือกเร็วๆ) */
+  categories?: string[]
+  /** หมวดเริ่มต้นตอนเพิ่มใหม่ (เช่น หมวดที่กรองอยู่) */
+  defaultCategory?: string
 }
 
 const STATUS_LIST: CaptionStatus[] = ['draft', 'ready', 'posted']
 
-function makeEmptyForm(): NewCaption {
-  return { text: '', postDate: todayAsText(), postTime: null, status: 'draft', platforms: [], remind: false }
+function makeEmptyForm(category = ''): NewCaption {
+  return { text: '', postDate: todayAsText(), postTime: null, status: 'draft', platforms: [], remind: false, category }
 }
 
-export function CaptionEditBox({ isOpen, onClose, caption }: CaptionEditBoxProps) {
+export function CaptionEditBox({ isOpen, onClose, caption, categories = [], defaultCategory = '' }: CaptionEditBoxProps) {
   const showMessage = useShowMessage()
   const [form, setForm] = useState<NewCaption>(makeEmptyForm)
   const [isSaving, setIsSaving] = useState(false)
@@ -44,10 +48,11 @@ export function CaptionEditBox({ isOpen, onClose, caption }: CaptionEditBoxProps
             status: caption.status,
             platforms: caption.platforms,
             remind: caption.remind,
+            category: caption.category,
           }
-        : makeEmptyForm(),
+        : makeEmptyForm(defaultCategory),
     )
-  }, [isOpen, caption])
+  }, [isOpen, caption, defaultCategory])
 
   function changeForm(changes: Partial<NewCaption>) {
     setForm((oldForm) => ({ ...oldForm, ...changes }))
@@ -68,7 +73,8 @@ export function CaptionEditBox({ isOpen, onClose, caption }: CaptionEditBoxProps
       return
     }
     // ไม่มีวันที่ → ไม่มีเวลา และไม่เตือน (เก็บในคลังสำรอง)
-    const cleanForm: NewCaption = form.postDate ? form : { ...form, postTime: null, remind: false }
+    const baseForm: NewCaption = { ...form, category: form.category.trim() }
+    const cleanForm: NewCaption = form.postDate ? baseForm : { ...baseForm, postTime: null, remind: false }
     setIsSaving(true)
     try {
       if (caption) await saveShopCaption(caption.id, cleanForm)
@@ -126,6 +132,28 @@ export function CaptionEditBox({ isOpen, onClose, caption }: CaptionEditBoxProps
             )}
           </div>
           {!form.postDate && <p className="mt-1 text-sm text-soft">ยังไม่กำหนดวัน → อยู่ในคลังแคปชั่นสำรอง</p>}
+        </div>
+
+        {/* หมวด */}
+        <div>
+          <p className="small-label mb-2">หมวด (พิมพ์ตั้งเองได้)</p>
+          <input
+            className="text-input"
+            value={form.category}
+            onChange={(event) => changeForm({ category: event.target.value })}
+            placeholder="เช่น โปรโมชั่น, รีวิว, ทักทาย"
+            maxLength={30}
+            aria-label="หมวดของแคปชั่น"
+          />
+          {categories.length > 0 && (
+            <div className="mt-2 flex flex-wrap gap-2">
+              {categories.map((category) => (
+                <TagButton key={category} isSelected={form.category.trim() === category} onClick={() => changeForm({ category: form.category.trim() === category ? '' : category })}>
+                  {category}
+                </TagButton>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* แพลตฟอร์ม */}

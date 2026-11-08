@@ -6,28 +6,53 @@
 //   - ทุกใบมีปุ่มคัดลอก ติ๊กโพสต์แล้ว แก้ไข ลบ
 // =====================================================================
 import { useMemo, useState, type ClipboardEvent, type ReactNode } from 'react'
-import { ChevronDown, ChevronRight, ClipboardPaste, Plus } from 'lucide-react'
+import { ChevronDown, ChevronRight, ClipboardPaste, Plus, Search } from 'lucide-react'
 import { showFullDate, todayAsText } from '@/shared/dateTools'
 import { useLiveList } from '@/shared/data/useLiveList'
 import { EmptyMessage } from '@/shared/parts/EmptyMessage'
 import { LoadingDots } from '@/shared/parts/LoadingDots'
 import { useShowMessage } from '@/shared/parts/PopupMessage'
 import { RoundButton } from '@/shared/parts/RoundButton'
+import { TagButton, TagRow } from '@/shared/parts/TagButton'
 import { cleanText } from '@/shared/text/copyText'
 import { CAPTIONS_TABLE, addShopCaption, getAllShopCaptions } from '../../database'
 import type { ShopCaption } from '../../types'
 import { CaptionCard } from './CaptionCard'
 import { CaptionEditBox } from './CaptionEditBox'
 
+/** ค่าพิเศษของตัวกรอง = แคปชั่นที่ไม่มีหมวด */
+const NO_CATEGORY = '__none__'
+
 export function CaptionsTab() {
   const showMessage = useShowMessage()
-  const { items: captions, isLoading, errorText } = useLiveList({ tableName: CAPTIONS_TABLE, getList: getAllShopCaptions })
+  const { items: allCaptions, isLoading, errorText } = useLiveList({ tableName: CAPTIONS_TABLE, getList: getAllShopCaptions })
   const [pasteText, setPasteText] = useState('')
   const [pasteDate, setPasteDate] = useState(todayAsText)
   const [isAdding, setIsAdding] = useState(false)
   const [isPostedOpen, setIsPostedOpen] = useState(false)
   const [isNewBoxOpen, setIsNewBoxOpen] = useState(false)
   const [editingCaption, setEditingCaption] = useState<ShopCaption | undefined>()
+  // กรอง: หมวดที่เลือก (null = ทั้งหมด, NO_CATEGORY = ไม่มีหมวด) + คำค้นหา
+  const [filterCategory, setFilterCategory] = useState<string | null>(null)
+  const [searchText, setSearchText] = useState('')
+
+  // หมวดทั้งหมดที่มี (เรียงตามชื่อ) + มีแคปชั่นที่ไม่มีหมวดไหม
+  const categories = useMemo(
+    () => [...new Set(allCaptions.map((caption) => caption.category).filter(Boolean))].sort((first, second) => first.localeCompare(second, 'th')),
+    [allCaptions],
+  )
+  const hasNoCategory = allCaptions.some((caption) => !caption.category)
+  // ถ้าหมวดที่เลือกอยู่หายไปแล้ว (ไม่มีแคปชั่นเหลือ) ให้กลับไปดูทั้งหมด
+  const activeCategory = filterCategory === NO_CATEGORY || (filterCategory && categories.includes(filterCategory)) ? filterCategory : null
+
+  const captions = useMemo(() => {
+    const keyword = searchText.trim().toLowerCase()
+    return allCaptions.filter(
+      (caption) =>
+        (activeCategory === null || (activeCategory === NO_CATEGORY ? !caption.category : caption.category === activeCategory)) &&
+        (!keyword || caption.text.toLowerCase().includes(keyword) || caption.category.toLowerCase().includes(keyword)),
+    )
+  }, [allCaptions, activeCategory, searchText])
 
   // แบ่งกลุ่ม
   const groups = useMemo(() => {
@@ -57,7 +82,7 @@ export function CaptionsTab() {
     if (!cleaned.trim()) return
     setIsAdding(true)
     try {
-      await addShopCaption({ text: cleaned, postDate: pasteDate || null, postTime: null, status: 'draft', platforms: [], remind: false })
+      await addShopCaption({ text: cleaned, postDate: pasteDate || null, postTime: null, status: 'draft', platforms: [], remind: false, category: activeCategory && activeCategory !== NO_CATEGORY ? activeCategory : '' })
       showMessage(pasteDate ? 'เพิ่มแคปชั่นแล้ว' : 'เก็บเข้าคลังแล้ว')
       setPasteText('')
     } catch (error) {
@@ -123,7 +148,42 @@ export function CaptionsTab() {
         {!pasteDate && <p className="mt-1 px-1 text-xs text-soft">ไม่เลือกวัน = เก็บเข้าคลังแคปชั่นสำรอง</p>}
       </div>
 
-      {captions.length === 0 && (
+      {/* ค้นหา + กรองตามหมวด */}
+      {allCaptions.length > 0 && (
+        <div className="flex flex-col gap-3">
+          <label className="relative block">
+            <Search size={18} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-soft" aria-hidden="true" />
+            <input
+              className="text-input pl-11"
+              placeholder="ค้นหาในแคปชั่น"
+              value={searchText}
+              onChange={(event) => setSearchText(event.target.value)}
+              aria-label="ค้นหาในแคปชั่น"
+            />
+          </label>
+          {(categories.length > 0) && (
+            <TagRow>
+              <TagButton isSelected={activeCategory === null} onClick={() => setFilterCategory(null)}>
+                ทั้งหมด ({allCaptions.length})
+              </TagButton>
+              {categories.map((category) => (
+                <TagButton key={category} isSelected={activeCategory === category} onClick={() => setFilterCategory(category)} emoji="🏷️">
+                  {category} ({allCaptions.filter((caption) => caption.category === category).length})
+                </TagButton>
+              ))}
+              {hasNoCategory && (
+                <TagButton isSelected={activeCategory === NO_CATEGORY} onClick={() => setFilterCategory(NO_CATEGORY)}>
+                  ไม่มีหมวด
+                </TagButton>
+              )}
+            </TagRow>
+          )}
+        </div>
+      )}
+
+      {allCaptions.length > 0 && captions.length === 0 && <EmptyMessage emoji="🔍" title="ไม่เจอแคปชั่นที่ตรงกัน" text="ลองเปลี่ยนหมวดหรือคำค้นหา" />}
+
+      {allCaptions.length === 0 && (
         <EmptyMessage emoji="📅" title="ยังไม่มีแคปชั่น" text="วางแคปชั่นในช่องด้านบน เลือกวันที่จะโพสต์ แล้วมาเปิดดู กดคัดลอกไปโพสต์ได้เลย" />
       )}
 
@@ -170,8 +230,8 @@ export function CaptionsTab() {
         </section>
       )}
 
-      <CaptionEditBox isOpen={isNewBoxOpen} onClose={() => setIsNewBoxOpen(false)} />
-      <CaptionEditBox isOpen={Boolean(editingCaption)} caption={editingCaption} onClose={() => setEditingCaption(undefined)} />
+      <CaptionEditBox isOpen={isNewBoxOpen} onClose={() => setIsNewBoxOpen(false)} categories={categories} defaultCategory={activeCategory && activeCategory !== NO_CATEGORY ? activeCategory : ''} />
+      <CaptionEditBox isOpen={Boolean(editingCaption)} caption={editingCaption} onClose={() => setEditingCaption(undefined)} categories={categories} />
     </div>
   )
 }

@@ -1,15 +1,14 @@
 // =====================================================================
 // database.ts (shop) : อ่าน / เพิ่ม / แก้ / ลบ ข้อมูลร้านค้า
 //   ส่วนที่ 1 : ชุดข้อความ   (ตาราง shop_messages)
-//   ส่วนที่ 2 : สินค้า        (ตาราง shop_products)
-//   ส่วนที่ 3 : ออเดอร์       (ตาราง shop_orders)
-//   ส่วนที่ 3.5 : แคปชั่นโพสต์  (ตาราง shop_captions)
+//   ส่วนที่ 2 : แคปชั่นโพสต์  (ตาราง shop_captions)
 //   ส่วนที่ 4 : ถังขยะ + สำรองข้อมูล (รวม 4 ตาราง)
 // =====================================================================
 import { database, stopIfError, tellListChanged } from '@/shared/database'
-import type { CaptionStatus, NewCaption, NewOrder, NewProduct, Order, Product, ShopCaption, ShopMessage } from './types'
+import type { CaptionStatus, NewCaption, ShopCaption, ShopMessage } from './types'
 
 export const MESSAGES_TABLE = 'shop_messages'
+// ตารางสินค้า/ออเดอร์ยังอยู่ในฐานข้อมูล (ข้อมูลเก่าไม่หาย) แต่ไม่มีหน้าใช้งานแล้ว เหลือไว้แค่ถังขยะกับสำรองข้อมูล
 export const PRODUCTS_TABLE = 'shop_products'
 export const ORDERS_TABLE = 'shop_orders'
 export const CAPTIONS_TABLE = 'shop_captions'
@@ -77,100 +76,14 @@ export async function swapShopMessages(first: ShopMessage, second: ShopMessage) 
 export const moveShopMessageToTrash = (messageId: string) => moveToTrash(MESSAGES_TABLE, messageId)
 
 // =====================================================================
-// ส่วนที่ 2 : สินค้า
-// =====================================================================
-
-/** ดึงสินค้าทั้งหมด เรียงตามชื่อ */
-export async function getAllProducts(): Promise<Product[]> {
-  const { data, error } = await database
-    .from(PRODUCTS_TABLE)
-    .select('id, name, price, stock, note, created_at')
-    .is('deleted_at', null)
-    .order('name', { ascending: true })
-  stopIfError(error)
-  return (data ?? []).map((row) => ({
-    id: row.id as string,
-    name: row.name as string,
-    price: Number(row.price),
-    stock: row.stock as number,
-    note: row.note as string,
-    createdAt: row.created_at as string,
-  }))
-}
-
-/** เพิ่มสินค้า */
-export async function addProduct(newProduct: NewProduct) {
-  const { error } = await database.from(PRODUCTS_TABLE).insert(newProduct)
-  stopIfError(error)
-  tellListChanged(PRODUCTS_TABLE)
-}
-
-/** แก้สินค้า (ส่งมาเฉพาะส่วนที่เปลี่ยน) */
-export async function saveProduct(productId: string, changes: Partial<NewProduct>) {
-  const { error } = await database.from(PRODUCTS_TABLE).update(changes).eq('id', productId)
-  stopIfError(error)
-  tellListChanged(PRODUCTS_TABLE)
-}
-
-export const moveProductToTrash = (productId: string) => moveToTrash(PRODUCTS_TABLE, productId)
-
-// =====================================================================
-// ส่วนที่ 3 : ออเดอร์
-// =====================================================================
-
-/** ดึงออเดอร์ทั้งหมด ใหม่ล่าสุดก่อน */
-export async function getAllOrders(): Promise<Order[]> {
-  const { data, error } = await database
-    .from(ORDERS_TABLE)
-    .select('id, customer_name, detail, total_price, status, created_at')
-    .is('deleted_at', null)
-    .order('created_at', { ascending: false })
-  stopIfError(error)
-  return (data ?? []).map((row) => ({
-    id: row.id as string,
-    customerName: row.customer_name as string,
-    detail: row.detail as string,
-    totalPrice: Number(row.total_price),
-    status: row.status as Order['status'],
-    createdAt: row.created_at as string,
-  }))
-}
-
-/** แปลงข้อมูลออเดอร์ → ชื่อคอลัมน์ในฐานข้อมูล */
-function orderToRow(order: Partial<NewOrder>): Record<string, unknown> {
-  const row: Record<string, unknown> = {}
-  if (order.customerName !== undefined) row.customer_name = order.customerName
-  if (order.detail !== undefined) row.detail = order.detail
-  if (order.totalPrice !== undefined) row.total_price = order.totalPrice
-  if (order.status !== undefined) row.status = order.status
-  return row
-}
-
-/** เพิ่มออเดอร์ */
-export async function addOrder(newOrder: NewOrder) {
-  const { error } = await database.from(ORDERS_TABLE).insert(orderToRow(newOrder))
-  stopIfError(error)
-  tellListChanged(ORDERS_TABLE)
-}
-
-/** แก้ออเดอร์ (ส่งมาเฉพาะส่วนที่เปลี่ยน) */
-export async function saveOrder(orderId: string, changes: Partial<NewOrder>) {
-  const { error } = await database.from(ORDERS_TABLE).update(orderToRow(changes)).eq('id', orderId)
-  stopIfError(error)
-  tellListChanged(ORDERS_TABLE)
-}
-
-export const moveOrderToTrash = (orderId: string) => moveToTrash(ORDERS_TABLE, orderId)
-
-// =====================================================================
-// ส่วนที่ 3.5 : แคปชั่นโพสต์ (ตาราง shop_captions)
+// ส่วนที่ 2 : แคปชั่นโพสต์ (ตาราง shop_captions)
 // =====================================================================
 
 /** ดึงแคปชั่นทั้งหมด เรียงตามวันที่โพสต์ (ที่ไม่มีวันอยู่ท้าย) แล้วตามเวลา */
 export async function getAllShopCaptions(): Promise<ShopCaption[]> {
   const { data, error } = await database
     .from(CAPTIONS_TABLE)
-    .select('id, text, post_date, post_time, status, platforms, remind, created_at')
+    .select('id, text, post_date, post_time, status, platforms, remind, category, created_at')
     .is('deleted_at', null)
     .order('post_date', { ascending: true, nullsFirst: false })
     .order('post_time', { ascending: true, nullsFirst: false })
@@ -185,6 +98,7 @@ export async function getAllShopCaptions(): Promise<ShopCaption[]> {
     status: row.status as CaptionStatus,
     platforms: (row.platforms as string[] | null) ?? [],
     remind: Boolean(row.remind),
+    category: (row.category as string | null) ?? '',
     createdAt: row.created_at as string,
   }))
 }
@@ -198,6 +112,7 @@ function captionToRow(caption: Partial<NewCaption>): Record<string, unknown> {
   if (caption.status !== undefined) row.status = caption.status
   if (caption.platforms !== undefined) row.platforms = caption.platforms
   if (caption.remind !== undefined) row.remind = caption.remind
+  if (caption.category !== undefined) row.category = caption.category
   return row
 }
 

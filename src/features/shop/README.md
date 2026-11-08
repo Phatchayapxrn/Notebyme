@@ -1,17 +1,16 @@
 # ระบบ "ร้าน" (shop)
 
-หน้าจัดการร้าน แบ่งเป็น 4 แท็บ
+หน้าจัดการร้าน แบ่งเป็น 2 แท็บ
 
 | ลิงก์ | หน้า |
 |---|---|
 | `/shop` หรือ `/shop?tab=messages` | **ชุดข้อความ** : วางข้อความเก็บไว้ กดคัดลอกไปใช้ (เช่น ข้อความตอบลูกค้า / แคปชันโพสต์ขายของ) |
-| `/shop?tab=products` | **สินค้า** : ชื่อ ราคา จำนวนในสต็อก (กด - / + ปรับจำนวน) |
-| `/shop?tab=orders` | **ออเดอร์** : ชื่อลูกค้า รายละเอียด ยอดรวม สถานะ (รอโอน → โอนแล้ว รอส่ง → ส่งแล้ว) |
 | `/shop?tab=captions` | **แคปชั่น** : เก็บแคปชั่นโพสต์ + วางแผนวันโพสต์ (วันนี้ / ที่กำลังจะถึง / คลังสำรอง) มีปุ่มคัดลอก |
 
 ## แคปชั่น ทำอะไรได้บ้าง
 - **วางแคปชั่น 1 ครั้ง = ได้ 1 ใบ** : เลือกวันที่โพสต์ แล้ววางในช่องเส้นประ (ล้างวันที่ = เก็บเข้าคลังสำรอง)
 - **กลุ่มที่โชว์** : เลยกำหนด → วันนี้ → วันที่กำลังจะถึง → คลังสำรอง → โพสต์แล้ว (พับไว้)
+- **หมวด** : พิมพ์ตั้งชื่อหมวดเองในแต่ละใบ (เช่น โปรโมชั่น, รีวิว) มีแถบกรองตามหมวด + ช่องค้นหา (ต้องรัน `014_shop_captions_category.sql`)
 - **ปุ่มคัดลอก** ในแต่ละใบ, ติ๊ก "โพสต์แล้ว" ได้, กดข้อความเพื่อแก้ไข (วัน-เวลา แพลตฟอร์มหลายอัน สถานะ เตือน)
 - **เตือนตอนถึงเวลาโพสต์** : `parts/captions/CaptionReminders.tsx` (ทำงานตอนเปิดแอพอยู่ ไม่ระบุเวลา = เตือน 9:00)
 
@@ -29,32 +28,27 @@
 | ไฟล์ | ทำอะไร |
 |---|---|
 | `feature.tsx` | ข้อมูลระบบ: เมนู "ร้าน", การ์ดหน้าแรก, ถังขยะ, สำรองข้อมูล |
-| `types.ts` | `ShopMessage`, `Product`, `Order`, `OrderStatus` + `ORDER_STATUS_INFO` (ชื่อไทย/สี/ขั้นถัดไป), `LOW_STOCK_NUMBER`, `showMoney`, `toNumber` |
-| `database.ts` | ฟังก์ชันอ่าน/เขียนของทั้ง 4 ตาราง + ถังขยะรวม (`getShopTrashItems`, `bringShopItemBack`, `deleteShopItemForever`) |
+| `database.ts` | ฟังก์ชันอ่าน/เขียนของตารางของร้าน + ถังขยะรวม (`getShopTrashItems`, `bringShopItemBack`, `deleteShopItemForever`) |
 | `pages/ShopPage.tsx` | หน้าหลัก + แท็บ |
 | `parts/messages/MessageSetsTab.tsx` | แท็บชุดข้อความ: รายการชุด + ช่องวางข้อความเพิ่มชุดใหม่ + คัดลอกทุกชุด |
 | `parts/messages/MessageSetBox.tsx` | ชุดข้อความ 1 ชุด: ปุ่มคัดลอก, แก้ข้อความ, ฟอนต์, อีโมจิ, เลื่อนขึ้น/ลง, ลบ |
-| `parts/products/ProductsTab.tsx` | แท็บสินค้า: ค้นหา, รายการ, ปรับจำนวน |
-| `parts/products/ProductEditBox.tsx` | กล่องเด้ง เพิ่ม/แก้/ลบ สินค้า |
-| `parts/orders/OrdersTab.tsx` | แท็บออเดอร์: สรุปยอด, กรองสถานะ, รายการ |
-| `parts/orders/OrderEditBox.tsx` | กล่องเด้ง เพิ่ม/แก้/ลบ ออเดอร์ |
 | `parts/captions/CaptionsTab.tsx` | แท็บแคปชั่น: ช่องวาง, กลุ่มตามวัน, คลังสำรอง |
 | `parts/captions/CaptionCard.tsx` | แคปชั่น 1 ใบ: ป้ายแพลตฟอร์ม/สถานะ, คัดลอก, ติ๊กโพสต์แล้ว, ลบ |
 | `parts/captions/CaptionEditBox.tsx` | กล่องเด้ง เพิ่ม/แก้ แคปชั่น |
 | `parts/captions/CaptionReminders.tsx` | ตัวเตือนถึงเวลาโพสต์ (ทำงานเบื้องหลัง) |
-| `parts/ShopHomeCard.tsx` | ในหน้าแรก: จำนวนรอโอน / รอส่ง / สินค้าใกล้หมด / แคปชั่นต้องโพสต์ |
+| `parts/ShopHomeCard.tsx` | ในหน้าแรก: แคปชั่นวันนี้ / เลยกำหนดยังไม่โพสต์ |
 
 ชิ้นส่วนที่ใช้ร่วมกับระบบอื่นได้ (อยู่ใน `src/shared/`):
 `parts/CopyButton.tsx`, `parts/EmojiButton.tsx`, `parts/FancyFontButton.tsx`, `text/copyText.ts`, `text/fancyLetters.ts`, `text/insertText.ts`
 
 ## ตารางในฐานข้อมูล
-`shop_messages`, `shop_products`, `shop_orders` (สร้างด้วย `supabase/sql/003_future_and_shop.sql`) และ `shop_captions` (`supabase/sql/013_shop_captions.sql`) ดูรายละเอียดใน `docs/03-database.md`
+`shop_messages`, `shop_products`, `shop_orders` (สร้างด้วย `supabase/sql/003_future_and_shop.sql`) และ `shop_captions` (`supabase/sql/013_shop_captions.sql` + `014_shop_captions_category.sql`) ดูรายละเอียดใน `docs/03-database.md`
 
 ## อยากแก้...
 | อยาก | แก้ที่ |
 |---|---|
-| ชื่อ/สีสถานะออเดอร์ | `ORDER_STATUS_INFO` ใน `types.ts` |
-| จำนวนที่ถือว่า "ใกล้หมด" (ตอนนี้ 3) | `LOW_STOCK_NUMBER` ใน `types.ts` |
 | เพิ่มอีโมจิ / อิโมติคอน | `EMOJI_GROUPS` ใน `src/shared/parts/EmojiButton.tsx` |
 | เพิ่ม/ลด ฟอนต์พิเศษ | `FANCY_STYLES` ใน `src/shared/text/fancyLetters.ts` |
 | ระยะบรรทัดตอนคัดลอก | `cleanText` ใน `src/shared/text/copyText.ts` |
+## หมายเหตุ: เอาสินค้า/ออเดอร์ออกแล้ว
+เอาแท็บ สินค้า และ ออเดอร์ ออกจากหน้าร้านแล้ว แต่ตาราง `shop_products` / `shop_orders` ยังอยู่ในฐานข้อมูล (ข้อมูลเก่าไม่หาย) และยังกู้จากถังขยะ/สำรองข้อมูลได้

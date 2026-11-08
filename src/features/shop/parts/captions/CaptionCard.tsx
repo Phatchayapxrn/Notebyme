@@ -55,6 +55,9 @@ export function CaptionCard({ caption, onEdit, showDate = false }: CaptionCardPr
             {caption.postTime && `${caption.postTime} น.`}
           </span>
         )}
+        {caption.category && (
+          <span className="rounded-full border border-line bg-paper px-2 py-0.5 text-[11px] text-ink">🏷️ {caption.category}</span>
+        )}
         {platforms.map((platform) => (
           <span
             key={platform.id}

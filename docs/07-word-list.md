@@ -143,7 +143,7 @@
 | `insertAtCursor` | ใส่ข้อความ (อีโมจิ) ตรงตำแหน่งที่พิมพ์อยู่ | `src/shared/text/insertText.ts` |
 | `CopyButton` / `EmojiButton` / `FancyFontButton` | ปุ่มคัดลอก / ปุ่มอีโมจิ / ปุ่มฟอนต์ | `src/shared/parts/` |
 | `FutureMessage` / `isOpenNow` | ข้อความถึงอนาคต / ถึงวันเปิดหรือยัง | `src/features/future/` |
-| `ShopMessage` / `Product` / `Order` | ชุดข้อความ / สินค้า / ออเดอร์ | `src/features/shop/types.ts` |
+| `ShopMessage` / `ShopCaption` | ชุดข้อความ / แคปชั่นโพสต์ | `src/features/shop/types.ts` |
 
 ## คำจาก React / ไลบรารี ที่เปลี่ยนชื่อไม่ได้
 บางคำมาจากเครื่องมือภายนอก ต้องใช้ตามนั้น
