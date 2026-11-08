@@ -17,7 +17,7 @@
 | `pages/NotesPage.tsx` | หน้ารวม: ค้นหา, กรองหมวด, สลับแบบการ์ด/แถว, ปักหมุดอยู่บน, ปุ่ม + |
 | `pages/NoteEditPage.tsx` | หน้าแก้ไข: หมวด, หัวข้อ, เนื้อหา, ปุ่มบันทึก (Ctrl+S), ปักหมุด, ลบ, บันทึกอัตโนมัติ |
 | `parts/NoteCard.tsx` | การ์ดไอเดีย 1 อัน (แบบ `grid` = การ์ด, `list` = แถว) |
-| `parts/NotesHomeCard.tsx` | ส่วนในหน้าแรก: การ์ดหมวดหมู่ + ไอเดียล่าสุด |
+| `parts/NotesHomeCard.tsx` | ส่วนในหน้าแรก: การ์ดหมวดหมู่ |
 | `parts/editor/NoteEditor.tsx` | ช่องเขียน (TipTap) + วางรูป / ลากไฟล์มาใส่ |
 | `parts/editor/EditorToolbar.tsx` | แถบปุ่ม: ตัวหนา เอียง หัวข้อ รายการ เช็คลิสต์ อ้างอิง รูป วิดีโอ ย้อนกลับ |
 | `parts/editor/PictureBlock.tsx` | บล็อกรูปในเนื้อหา (เก็บ path แล้วขอลิงก์ตอนแสดง) |
@@ -37,5 +37,4 @@
 | เพิ่มปุ่มในแถบเครื่องมือ (เช่น ขีดเส้นใต้) | `EditorToolbar.tsx` (+ ติดตั้ง extension ของ TipTap แล้วใส่ใน `NoteEditor.tsx`) |
 | ข้อความจางๆ ในช่องเขียน | `Placeholder.configure(...)` ใน `NoteEditor.tsx` |
 | หน้าตาเนื้อหา (ขนาดตัวหนังสือ หัวข้อ) | `.note-content` ใน `src/index.css` |
-| จำนวนไอเดียล่าสุดในหน้าแรก | `notes.slice(0, 6)` ใน `NotesHomeCard.tsx` |
 | เวลารอก่อนบันทึกอัตโนมัติ | `waitTime` ใน `useAutoSave` (`NoteEditPage.tsx`) |

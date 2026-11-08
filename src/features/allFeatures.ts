@@ -15,6 +15,7 @@ import { futureFeature } from './future/feature'
 import { shopFeature } from './shop/feature'
 import { mailsFeature } from './mails/feature'
 import { plainNotesFeature } from './plain_notes/feature'
+import { memoFeature } from './memo/feature'
 import { chatFeature } from './chat/feature'
 import { calendarFeature } from './calendar/feature'
 import { trashFeature } from './trash/feature'
@@ -29,6 +30,7 @@ export const allFeatures: AppFeature[] = [
   shopFeature,
   mailsFeature,
   plainNotesFeature,
+  memoFeature,
   chatFeature,
   calendarFeature,
   trashFeature,

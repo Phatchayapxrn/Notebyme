@@ -39,7 +39,7 @@ export default defineConfig({
       output: {
         manualChunks: {
           react: ['react', 'react-dom', 'react-router-dom'],
-          editor: ['@tiptap/react', '@tiptap/starter-kit', '@tiptap/extension-placeholder', '@tiptap/extension-task-list', '@tiptap/extension-task-item'],
+          editor: ['@tiptap/react', '@tiptap/starter-kit', '@tiptap/extension-placeholder', '@tiptap/extension-task-list', '@tiptap/extension-task-item', '@tiptap/extension-underline', '@tiptap/extension-highlight', '@tiptap/extension-link', '@tiptap/extension-table', '@tiptap/extension-table-row', '@tiptap/extension-table-header', '@tiptap/extension-table-cell'],
           database: ['@supabase/supabase-js'],
         },
       },

@@ -14,6 +14,8 @@
 | 007_plain_notes.sql | โน๊ตทั่วไป (โน๊ตเร็ว) | `plain_notes` |
 | 010_chat.sql | แชทเก็บข้อความส่วนตัว | `chat` |
 | 011_calendar.sql | ปฏิทิน | `calendar` |
+| 012_memo.sql | โน๊ตแบบไอโฟน (โฟลเดอร์ ปักหมุด จัดรูปแบบ ตาราง) — ล็อกตั้งแต่เริ่ม (มีแค่แอดมินเห็น) | `memo` |
+| 013_shop_captions.sql | แท็บแคปชั่นในหน้าร้าน (ใช้สิทธิ์เดียวกับร้าน) | `shop` |
 
 ## ออฟไลน์
 - โค้ดอยู่ที่ `src/shared/offline/` — ระบบใหม่ทุกระบบอ่าน/เขียนผ่าน `listRows / insertRow / updateRow / deleteRow` (ไฟล์ `offlineData.ts`)

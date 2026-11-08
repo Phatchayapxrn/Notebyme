@@ -1,23 +1,20 @@
 // =====================================================================
 // NotesHomeCard : ส่วนของ "ไอเดีย" ที่ไปโชว์ในหน้าแรก
-//   1) การ์ดหมวดหมู่ทั้งหมด + จำนวนไอเดียในแต่ละหมวด (กดแล้วไปดูหมวดนั้น)
-//   2) ไอเดียล่าสุด 6 อัน
+//   การ์ดหมวดหมู่ทั้งหมด + จำนวนไอเดียในแต่ละหมวด (กดแล้วไปดูหมวดนั้น)
 // =====================================================================
 import { useMemo, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { Plus, ArrowRight } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { Plus } from 'lucide-react'
 import { useLiveList } from '@/shared/data/useLiveList'
 import { useGroups } from '@/shared/groups/useGroups'
 import { GroupCard } from '@/shared/groups/GroupCard'
 import { GroupEditBox } from '@/shared/groups/GroupEditBox'
-import { EmptyMessage } from '@/shared/parts/EmptyMessage'
 import { getAllNotes } from '../database'
-import { NoteCard } from './NoteCard'
 
 export function NotesHomeCard() {
   const navigate = useNavigate()
   const { items: notes } = useLiveList({ tableName: 'notes', getList: getAllNotes })
-  const { groups, findGroup } = useGroups()
+  const { groups } = useGroups()
   const [isGroupBoxOpen, setIsGroupBoxOpen] = useState(false)
 
   /** จำนวนไอเดียในแต่ละหมวด */
@@ -26,8 +23,6 @@ export function NotesHomeCard() {
     notes.forEach((note) => note.groupId && counts.set(note.groupId, (counts.get(note.groupId) ?? 0) + 1))
     return counts
   }, [notes])
-
-  const latestNotes = notes.slice(0, 6)
 
   return (
     <div className="flex flex-col gap-8">
@@ -55,25 +50,6 @@ export function NotesHomeCard() {
             <span className="text-sm">หมวดใหม่</span>
           </button>
         </div>
-      </section>
-
-      {/* ไอเดียล่าสุด */}
-      <section>
-        <div className="mb-3 flex items-baseline justify-between">
-          <h2 className="small-label">ไอเดียล่าสุด</h2>
-          <Link to="/notes" className="flex items-center gap-1 text-sm text-wine hover:underline">
-            ดูทั้งหมด <ArrowRight size={14} />
-          </Link>
-        </div>
-        {latestNotes.length === 0 ? (
-          <EmptyMessage emoji="💡" title="ยังไม่มีไอเดีย" text="ไปที่เมนู ไอเดีย แล้วกด + เพื่อจดอันแรก" />
-        ) : (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-            {latestNotes.map((note) => (
-              <NoteCard key={note.id} note={note} group={findGroup(note.groupId)} look="grid" />
-            ))}
-          </div>
-        )}
       </section>
 
       <GroupEditBox isOpen={isGroupBoxOpen} onClose={() => setIsGroupBoxOpen(false)} />

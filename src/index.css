@@ -137,6 +137,36 @@
 .note-content ul[data-type='taskList'] li[data-checked='true'] > div {
   @apply text-soft line-through;
 }
+/* ---------- ส่วนเพิ่มของระบบ "โน๊ต" (memo): เส้นใต้ ไฮไลต์ ตาราง ชื่อโน๊ต ---------- */
+.note-content u {
+  @apply underline underline-offset-2;
+}
+.note-content mark {
+  @apply rounded-sm bg-yellow-200 px-0.5 text-black;
+}
+/* บรรทัดแรก = ชื่อโน๊ต (ตัวใหญ่ เหมือนโน๊ตไอโฟน) */
+.memo-content > :first-child:not(ul):not(ol):not(table) {
+  @apply font-title text-2xl font-semibold;
+}
+.memo-content table {
+  @apply w-full table-fixed border-collapse overflow-hidden rounded-lg;
+}
+.memo-content th,
+.memo-content td {
+  @apply relative min-w-[3rem] border border-line px-2 py-1.5 align-top;
+}
+.memo-content th {
+  @apply bg-blush text-left font-semibold;
+}
+.memo-content .selectedCell::after {
+  content: '';
+  @apply pointer-events-none absolute inset-0 bg-wine/10;
+}
+.memo-content td > p,
+.memo-content th > p {
+  margin: 0;
+}
+
 /* ข้อความจางๆ ตอนยังไม่ได้พิมพ์ */
 .note-content p.is-editor-empty:first-child::before {
   content: attr(data-placeholder);

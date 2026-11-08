@@ -3,14 +3,16 @@
 //   ส่วนที่ 1 : ชุดข้อความ   (ตาราง shop_messages)
 //   ส่วนที่ 2 : สินค้า        (ตาราง shop_products)
 //   ส่วนที่ 3 : ออเดอร์       (ตาราง shop_orders)
-//   ส่วนที่ 4 : ถังขยะ + สำรองข้อมูล (รวม 3 ตาราง)
+//   ส่วนที่ 3.5 : แคปชั่นโพสต์  (ตาราง shop_captions)
+//   ส่วนที่ 4 : ถังขยะ + สำรองข้อมูล (รวม 4 ตาราง)
 // =====================================================================
 import { database, stopIfError, tellListChanged } from '@/shared/database'
-import type { NewOrder, NewProduct, Order, Product, ShopMessage } from './types'
+import type { CaptionStatus, NewCaption, NewOrder, NewProduct, Order, Product, ShopCaption, ShopMessage } from './types'
 
 export const MESSAGES_TABLE = 'shop_messages'
 export const PRODUCTS_TABLE = 'shop_products'
 export const ORDERS_TABLE = 'shop_orders'
+export const CAPTIONS_TABLE = 'shop_captions'
 
 /** ย้ายไปถังขยะ (ใช้ได้ทุกตาราง) */
 async function moveToTrash(tableName: string, id: string) {
@@ -161,8 +163,63 @@ export async function saveOrder(orderId: string, changes: Partial<NewOrder>) {
 export const moveOrderToTrash = (orderId: string) => moveToTrash(ORDERS_TABLE, orderId)
 
 // =====================================================================
+// ส่วนที่ 3.5 : แคปชั่นโพสต์ (ตาราง shop_captions)
+// =====================================================================
+
+/** ดึงแคปชั่นทั้งหมด เรียงตามวันที่โพสต์ (ที่ไม่มีวันอยู่ท้าย) แล้วตามเวลา */
+export async function getAllShopCaptions(): Promise<ShopCaption[]> {
+  const { data, error } = await database
+    .from(CAPTIONS_TABLE)
+    .select('id, text, post_date, post_time, status, platforms, remind, created_at')
+    .is('deleted_at', null)
+    .order('post_date', { ascending: true, nullsFirst: false })
+    .order('post_time', { ascending: true, nullsFirst: false })
+    .order('created_at', { ascending: true })
+  stopIfError(error)
+  return (data ?? []).map((row) => ({
+    id: row.id as string,
+    text: row.text as string,
+    postDate: (row.post_date as string | null) ?? null,
+    // ฐานข้อมูลส่งเวลามาเป็น "14:30:00" → เอาแค่ "14:30"
+    postTime: row.post_time ? (row.post_time as string).slice(0, 5) : null,
+    status: row.status as CaptionStatus,
+    platforms: (row.platforms as string[] | null) ?? [],
+    remind: Boolean(row.remind),
+    createdAt: row.created_at as string,
+  }))
+}
+
+/** แปลงข้อมูลแคปชั่น → ชื่อคอลัมน์ในฐานข้อมูล */
+function captionToRow(caption: Partial<NewCaption>): Record<string, unknown> {
+  const row: Record<string, unknown> = {}
+  if (caption.text !== undefined) row.text = caption.text
+  if (caption.postDate !== undefined) row.post_date = caption.postDate
+  if (caption.postTime !== undefined) row.post_time = caption.postTime
+  if (caption.status !== undefined) row.status = caption.status
+  if (caption.platforms !== undefined) row.platforms = caption.platforms
+  if (caption.remind !== undefined) row.remind = caption.remind
+  return row
+}
+
+/** เพิ่มแคปชั่น */
+export async function addShopCaption(newCaption: NewCaption) {
+  const { error } = await database.from(CAPTIONS_TABLE).insert(captionToRow(newCaption))
+  stopIfError(error)
+  tellListChanged(CAPTIONS_TABLE)
+}
+
+/** แก้แคปชั่น (ส่งมาเฉพาะส่วนที่เปลี่ยน) */
+export async function saveShopCaption(captionId: string, changes: Partial<NewCaption>) {
+  const { error } = await database.from(CAPTIONS_TABLE).update(captionToRow(changes)).eq('id', captionId)
+  stopIfError(error)
+  tellListChanged(CAPTIONS_TABLE)
+}
+
+export const moveShopCaptionToTrash = (captionId: string) => moveToTrash(CAPTIONS_TABLE, captionId)
+
+// =====================================================================
 // ส่วนที่ 4 : ถังขยะ + สำรองข้อมูล
-// ถังขยะของร้านรวม 3 ตารางไว้ด้วยกัน
+// ถังขยะของร้านรวม 4 ตารางไว้ด้วยกัน
 // id ของในถังขยะเขียนแบบ "ชื่อตาราง:id" เช่น "shop_products:1234-..." จะได้รู้ว่ามาจากตารางไหน
 // =====================================================================
 
@@ -171,6 +228,7 @@ const TRASH_TABLES = [
   { tableName: MESSAGES_TABLE, titleColumn: 'title', textColumn: 'text', emoji: '💬' },
   { tableName: PRODUCTS_TABLE, titleColumn: 'name', textColumn: 'note', emoji: '📦' },
   { tableName: ORDERS_TABLE, titleColumn: 'customer_name', textColumn: 'detail', emoji: '🧾' },
+  { tableName: CAPTIONS_TABLE, titleColumn: 'text', textColumn: 'text', emoji: '📅' },
 ]
 
 /** แยก "ชื่อตาราง:id" ออกเป็น 2 ส่วน */
@@ -191,7 +249,7 @@ export async function getShopTrashItems() {
       stopIfError(error)
       return ((data ?? []) as unknown as Record<string, string>[]).map((row) => {
         const text = row[table.textColumn] ?? ''
-        const title = row[table.titleColumn] || text.split('\n')[0].slice(0, 60) || '(ไม่มีชื่อ)'
+        const title = (row[table.titleColumn] || text).split('\n')[0].slice(0, 60) || '(ไม่มีชื่อ)'
         return {
           id: `${table.tableName}:${row.id}`,
           title: `${table.emoji} ${title}`,
@@ -222,12 +280,12 @@ export async function deleteShopItemForever(trashId: string) {
 
 /** ดึงข้อมูลร้านทั้งหมด (สำหรับสำรองข้อมูล) */
 export async function getAllShopDataForBackup() {
-  const [messages, products, orders] = await Promise.all(
-    [MESSAGES_TABLE, PRODUCTS_TABLE, ORDERS_TABLE].map(async (tableName) => {
+  const [messages, products, orders, captions] = await Promise.all(
+    [MESSAGES_TABLE, PRODUCTS_TABLE, ORDERS_TABLE, CAPTIONS_TABLE].map(async (tableName) => {
       const { data, error } = await database.from(tableName).select('*').order('created_at')
       stopIfError(error)
       return data ?? []
     }),
   )
-  return { messages, products, orders }
+  return { messages, products, orders, captions }
 }

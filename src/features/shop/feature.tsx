@@ -5,6 +5,7 @@ import { Store } from 'lucide-react'
 import type { AppFeature } from '../AppFeature'
 import { ShopPage } from './pages/ShopPage'
 import { ShopHomeCard } from './parts/ShopHomeCard'
+import { CaptionReminders } from './parts/captions/CaptionReminders'
 import { bringShopItemBack, deleteShopItemForever, getAllShopDataForBackup, getShopTrashItems } from './database'
 
 export const shopFeature: AppFeature = {
@@ -15,6 +16,7 @@ export const shopFeature: AppFeature = {
   menuOrder: 5,
   pages: [{ path: '/shop', element: <ShopPage /> }],
   homeCard: ShopHomeCard,
+  backgroundPart: CaptionReminders,
   trashActions: {
     kindName: 'ร้าน',
     kindEmoji: '🏪',
